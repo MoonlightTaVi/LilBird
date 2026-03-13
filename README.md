@@ -17,8 +17,13 @@ Use `SPRING_PROFILE=dev` unless performing QA tests.
 Update the name of the database and its login credentials, if necessary.
 
 ```properties
-SPRING_PROFILE=test # 'test' or 'dev'
+# Profile may be 'test' or 'dev'
+SPRING_PROFILE=test
+# Database credentials and its name
 DB_USER=sa
 DB_PASSWORD=sa
 DB_NAME=lilbird-db
+# Server credentials (super admin)
+SA_USER=admin
+SA_PASSWORD=admin
 ```
