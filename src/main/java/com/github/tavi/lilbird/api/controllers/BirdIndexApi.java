@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.tavi.lilbird.api.HandledServerException;
 import com.github.tavi.lilbird.api.dto.BirdDTO;
 import com.github.tavi.lilbird.api.dto.IdResponseDTO;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
@@ -25,7 +26,7 @@ import jakarta.validation.Valid;
  * and other textual information.
  */
 @RestController
-@RequestMapping("api/v1/birds")
+@RequestMapping("api/birds")
 @Validated
 public class BirdIndexApi {
 
@@ -35,26 +36,31 @@ public class BirdIndexApi {
 
     @Operation(summary = "Create a new entry for a bird.")
     @ApiResponse(
-        description = "Returns the ID of the new bird entry.",
+        description = "The body contains the ID of the new bird entry",
         responseCode = "200",
         useReturnTypeSchema = true
     )
+    @ApiResponse(
+        description = "The request could not be processed (details provided)",
+        responseCode = "400",
+        useReturnTypeSchema = false
+    )
     @PostMapping(
-        value = "/create", 
+        value = "user/create", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<IdResponseDTO> postEntry(
+    public ResponseEntity<IdResponseDTO> newEntry(
             @RequestBody @Valid final BirdDTO birdDto
         ) 
     {
-        // TODO Catch possible exceptions to prevent HTTP 500
-        final BirdEntry entry = service.save(birdDto.toEntity());
-        return ResponseEntity.ok(
-                new IdResponseDTO(
-                    entry.getId(), 
-                    "A new bird entry has been created."
-                )
-            );
+        try {
+            final BirdEntry entry = service.save(birdDto.toEntity());
+            return new IdResponseDTO()
+                    .created(entry);
+        } catch (final HandledServerException e) {
+            return new IdResponseDTO()
+                    .badRequest(e);
+        }
     }
 
 }

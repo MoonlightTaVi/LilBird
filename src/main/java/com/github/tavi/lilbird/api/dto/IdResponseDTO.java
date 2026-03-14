@@ -1,10 +1,16 @@
 package com.github.tavi.lilbird.api.dto;
 
+import org.springframework.http.ResponseEntity;
+
+import com.github.tavi.lilbird.api.HandledServerException;
+import com.github.tavi.lilbird.db.entities.BirdEntry;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 /**
  * This Data Transfer Object is sent to the web-client
@@ -29,8 +35,34 @@ public class IdResponseDTO {
 
     @Schema(
         description = "Some additional message about the response",
-        example = "Successfully created a new database entry."
+        example = "(Operation details)"
     )
     private String message;
 
+
+    /**
+     * A shortcut for an HTTP response about the successful
+     * creation of a new database entity.
+     * 
+     * @param entry     The bird entry that was successfully created.
+     * @return          An HTTP response with details about this operation.
+     */
+    public ResponseEntity<IdResponseDTO> created(final BirdEntry entry) {
+        id = entry.getId();
+        message = "A new entry has been successfully created";
+        return ResponseEntity.ok(this);
+    }
+
+    /**
+     * A shortcut for HTTP 400 BAD_REQUEST response.
+     * 
+     * @param e         The exception that caused the bad request.
+     * @return          An HTTP response with details about this operation.
+     */
+    public ResponseEntity<IdResponseDTO> badRequest(final HandledServerException e) {
+        id = null;
+        message = e.getLocalizedMessage();
+        return ResponseEntity.badRequest().body(this);
+    }
+    
 }

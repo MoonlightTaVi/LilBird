@@ -5,16 +5,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.github.tavi.lilbird.api.HandledServerException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.db.repositories.BirdEntriesRepo;
 import com.github.tavi.lilbird.db.repositories.BirdSynonymsRepo;
 
 import jakarta.validation.constraints.NotNull;
+
 
 /**
  * This service manages the index of the bird database: 
@@ -25,9 +28,7 @@ import jakarta.validation.constraints.NotNull;
 @Validated
 public class BirdIndexService {
 
-    private final Logger log = LoggerFactory.getLogger(
-            BirdIndexService.class
-        );
+    private final ServiceLogger log = new ServiceLogger();
 
 
     @Autowired
@@ -49,17 +50,22 @@ public class BirdIndexService {
      * @see             BirdEntry
      */
     public BirdEntry save(@NotNull BirdEntry entry) {
-        logSaving(entry, entry.getId() == null);
+        log.saving(entry);
 
         try {
             entry = entriesRepo.save(entry);
         } catch (final OptimisticLockingFailureException e) {
-            log.warn(
-                "The entry could not be saved: {} (reason: {}).",
-                entry.toString(),
-                e.getLocalizedMessage()
+            log.failed(entry, e);
+            throw new HandledServerException(
+                "The entry is currently locked (try again later)"
+            );
+        } catch (final DataIntegrityViolationException e) {
+            log.duplication(entry);
+            throw new HandledServerException(
+                "The entry already exists"
             );
         }
+
         return entry;
     }
 
@@ -74,17 +80,14 @@ public class BirdIndexService {
      * @see             BirdSynonym
      */
     public BirdSynonym save(@NotNull BirdSynonym synonym) {
-        logSaving(synonym, synonym.getId() == null);
+        log.saving(synonym);
         
         try {
             synonym = synonymsRepo.save(synonym);
         } catch (final OptimisticLockingFailureException e) {
-            log.warn(
-                "The synonym could not be saved: {} (reason: {}).",
-                synonym.toString(),
-                e.getLocalizedMessage()
-            );
+            log.failed(synonym, e);
         }
+
         return synonym;
     }
 
@@ -143,16 +146,60 @@ public class BirdIndexService {
 
     // ==== MISC ====
 
+
     /**
-     * Logs a debug message about creating/updating some entity.
-     * 
-     * @param entity        Some database entity.
-     * @param isNew         Whether this entity is created or updated.
+     * A custom wrapper fpr Logback that is used only by
+     * the {@code BirdIndexService}.
      */
-    private void logSaving(final Object entity, final boolean isNew) {
-        final String message = isNew ? 
-                "Creating a new entity: {}." : 
-                "Updating an existent entity: {}.";
-        log.debug(message, entity.toString());
+    private static class ServiceLogger {
+
+        final Logger log = LoggerFactory.getLogger(
+            BirdIndexService.class
+        );
+        
+
+        /**
+         * Logs a debug message about saving a bird entry.
+         * 
+         * @param entry     The entry that is being saved.
+         */
+        void saving(final BirdEntry entry) {
+            log.debug("Saving an entry: {}", entry);
+        }
+        
+        /**
+         * Logs a debug message about saving a bird name synonym.
+         * 
+         * @param synonym   The synonym that is being saved.
+         */
+        void saving(final BirdSynonym synonym) {
+            log.debug("Saving a synonym: {}", synonym);
+        }
+
+        /**
+         * Logs an info message which says that the entry was tried
+         * to be duplicated ({@code DataIntegrityViolationException}).
+         * 
+         * @param entry     The entry that already exists.
+         */
+        void duplication(final BirdEntry entry) {
+            log.info("Duplication prevented: {}", entry);
+        }
+
+        /**
+         * Logs a generic warning about some database operation
+         * that was failed.
+         * 
+         * @param entity    The entity that caused the exception.
+         * @param e         The exception.
+         */
+        void failed(final Object entity, final Exception e) {
+            log.warn(
+                    "Operation failed for {} due to {}: {}", 
+                    entity,
+                    e.getClass().getSimpleName(),
+                    e.getLocalizedMessage()
+                );
+        }
     }
 }
