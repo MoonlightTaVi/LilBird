@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.HandledServerException;
+import com.github.tavi.lilbird.api.NotFoundException;
 import com.github.tavi.lilbird.api.dto.BirdDTO;
 import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
 import com.github.tavi.lilbird.api.dto.IdResponseDTO;
@@ -67,6 +68,10 @@ public class BirdIndexAdminApi {
         } catch (final HandledServerException e) {
             return new IdResponseDTO()
                     .badRequest(e);
+        } catch (final RuntimeException e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(null);
         }
     }
 
@@ -80,6 +85,11 @@ public class BirdIndexAdminApi {
     @ApiResponse(
         description = "The request could not be processed (details provided)",
         responseCode = "400",
+        useReturnTypeSchema = false
+    )
+    @ApiResponse(
+        description = "The entry does not exist",
+        responseCode = "404",
         useReturnTypeSchema = false
     )
     @PostMapping(
@@ -106,9 +116,16 @@ public class BirdIndexAdminApi {
             synonym = service.save(synonym);
             return new IdResponseDTO()
                     .created(synonym);
+        } catch (final NotFoundException e) {
+            return new IdResponseDTO()
+                    .notFound(e);
         } catch (final HandledServerException e) {
             return new IdResponseDTO()
                     .badRequest(e);
+        } catch (final RuntimeException e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(null);
         }
     }
 

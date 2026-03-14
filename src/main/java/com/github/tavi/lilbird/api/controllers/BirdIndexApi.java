@@ -3,6 +3,7 @@ package com.github.tavi.lilbird.api.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -54,6 +55,7 @@ public class BirdIndexApi {
         return ResponseEntity.ok(entryList);
     }
 
+    
     @Operation(
         summary = "Get list of alternative names for a bird"
     )
@@ -65,7 +67,7 @@ public class BirdIndexApi {
         ),
         @ApiResponse(
             description = "Empty array (a bird by this ID does not exist)",
-            responseCode = "400",
+            responseCode = "404",
             content = @Content(
                 schema = @Schema(example = "[]")
             )
@@ -92,7 +94,7 @@ public class BirdIndexApi {
         final List<BirdSynonym> entryList = service.getSynonymsOf(id);
         if (entryList.isEmpty()) {
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.NOT_FOUND)
                     .body(entryList);
         }
 

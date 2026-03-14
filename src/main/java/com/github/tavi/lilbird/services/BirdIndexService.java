@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.HandledServerException;
+import com.github.tavi.lilbird.api.NotFoundException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.db.repositories.BirdEntriesRepo;
@@ -98,14 +99,15 @@ public class BirdIndexService {
      * Finds the entry for the bird by its unique ID.
      * 
      * @param id            The ID of the bird.
-     * @return              The bird entity by this ID if it exists;
-     *                      {@code null} otherwise.
+     * @return              The bird entity by this ID if it exists.
+     * 
+     * @throws NotFoundException If the entity does not exist.
      */
-    public BirdEntry getEntry(final long id) {
+    public BirdEntry getEntry(final long id) throws NotFoundException {
         final BirdEntry entry = entriesRepo
                 .findById(id)
                 .orElseThrow(
-                    () -> new HandledServerException(
+                    () -> new NotFoundException(
                         "The entry by this ID does not exist"
                     )
                 );

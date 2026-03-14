@@ -1,8 +1,10 @@
 package com.github.tavi.lilbird.api.dto;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.github.tavi.lilbird.api.HandledServerException;
+import com.github.tavi.lilbird.api.NotFoundException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 
@@ -76,7 +78,22 @@ public class IdResponseDTO {
     public ResponseEntity<IdResponseDTO> badRequest(final HandledServerException e) {
         id = null;
         message = e.getLocalizedMessage();
-        return ResponseEntity.badRequest().body(this);
+        return ResponseEntity.badRequest()
+                .body(this);
+    }
+
+    /**
+     * A shortcut for HTTP 404 NOT_FOUND response.
+     * 
+     * @param e         This exception should provide some details
+     *                  about the operation.
+     * @return          An HTTP response with details about this operation.
+     */
+    public ResponseEntity<IdResponseDTO> notFound(final NotFoundException e) {
+        id = null;
+        message = e.getLocalizedMessage();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(this);
     }
     
 }
