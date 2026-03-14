@@ -1,5 +1,7 @@
 package com.github.tavi.lilbird.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +25,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BirdSynonym {
 
+    @Min(
+        value = 1,
+        message = "The ID is always > 0"
+    )
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +36,7 @@ public class BirdSynonym {
     /**
      * The reference to the original bird entry.
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(
         name = "entry_id", 
@@ -39,6 +48,7 @@ public class BirdSynonym {
     /**
      * The synonymous name for the bird.
      */
+    @NotNull
     @Column(nullable = false)
     private String name;
 

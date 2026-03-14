@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +26,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BirdEntry {
 
+    @Min(
+        value = 1,
+        message = "The ID is always > 0"
+    )
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +38,7 @@ public class BirdEntry {
      * The primary (unique) name of the entry.
      * May be used as an index for an optimized search.
      */
+    @NotNull
     @Column(unique = true, nullable = false)
     private String title;
 
