@@ -96,6 +96,19 @@ public class BirdIndexService {
     // ==== READ ====
 
     /**
+     * Checks if a {@link BirdEntry} with this id exists.
+     * It is recommended to check for entity existence
+     * before performing expensive operations.
+     * 
+     * @param id            The ID of the bird entry.
+     * @return              {@code true} if the entry exists;
+     *                      {@code false} otherwise.
+     */
+    public boolean entryExists(final long id) {
+        return entriesRepo.existsById(id);
+    }
+
+    /**
      * Finds the entry for the bird by its unique ID.
      * 
      * @param id            The ID of the bird.
