@@ -28,7 +28,10 @@ public class BirdDTO {
         max = 16, 
         message = "The primary name must be concise (< 16 symbols)"
     )
-    @Schema(description = "The primary name of the bird")
+    @Schema(
+        description = "The primary name of the bird",
+        example = "Corvus corax"
+    )
     private String title;
 
     /**
@@ -39,7 +42,10 @@ public class BirdDTO {
         max = 20, 
         message = "The secondary name must be concise (< 20 symbols)"
     )
-    @Schema(description = "(Optionally) Some more common name of the bird")
+    @Schema(
+        description = "(Optionally) Some more common name of the bird",
+        example = "Common raven"
+    )
     private String commonName = null;
 
 

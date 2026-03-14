@@ -3,9 +3,7 @@ package com.github.tavi.lilbird.api.dto;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,17 +17,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BirdSynonymDTO {
 
-    @NotNull
-    @Min(1)
-    @Schema(
-        description = "The ID of the original bird entry"
-    )
-    private Long originalId;
-
     @NotBlank
     @Size(max = 40)
     @Schema(
-        description = "The alternative name (synonym) of this bird"
+        description = "The alternative name (synonym) of this bird",
+        example = "Owl"
     )
     private String value;
 

@@ -15,6 +15,7 @@ import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,13 +37,16 @@ public class BirdIndexApi {
     private BirdIndexService service;
 
 
+    @Operation(
+        summary = "Get list of all birds"
+    )
     @ApiResponse(
-        description = "Returns a JSON array of all birds in the database",
+        description = "Successful",
         responseCode = "200",
         useReturnTypeSchema = true
     )
     @GetMapping(
-        value = "/all", 
+        value = "/", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<BirdEntry>> listAll() {
@@ -50,14 +54,17 @@ public class BirdIndexApi {
         return ResponseEntity.ok(entryList);
     }
 
+    @Operation(
+        summary = "Get list of alternative names for a bird"
+    )
     @ApiResponses(value = {
         @ApiResponse(
-            description = "Returns a JSON array of alternative names for the bird",
+            description = "Successful",
             responseCode = "200",
             useReturnTypeSchema = true
         ),
         @ApiResponse(
-            description = "Empty array, if a bird by this id does not exist",
+            description = "Empty array (a bird by this ID does not exist)",
             responseCode = "400",
             content = @Content(
                 schema = @Schema(example = "[]")
@@ -65,7 +72,7 @@ public class BirdIndexApi {
         )
     })
     @GetMapping(
-        value = "/names-of/{id}", 
+        value = "/{id}/alt", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<BirdSynonym>> synonymsOf(
@@ -79,7 +86,7 @@ public class BirdIndexApi {
                 example = "1"
             )
             @PathVariable("id") 
-            final long id
+                final long id
         ) 
     {
         final List<BirdSynonym> entryList = service.getSynonymsOf(id);

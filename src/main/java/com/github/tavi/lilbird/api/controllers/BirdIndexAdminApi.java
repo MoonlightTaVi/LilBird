@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,10 @@ import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 
 /**
@@ -28,7 +31,7 @@ import jakarta.validation.Valid;
  * and other details <b>by administators</b>.
  */
 @RestController
-@RequestMapping("api/admin/birds")
+@RequestMapping("api/pvt")
 @Validated
 public class BirdIndexAdminApi {
 
@@ -48,11 +51,13 @@ public class BirdIndexAdminApi {
         useReturnTypeSchema = false
     )
     @PostMapping(
-        value = "/create", 
+        value = "/bird", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<IdResponseDTO> newEntry(
-            @RequestBody @Valid final BirdDTO birdDto
+            @RequestBody 
+            @Valid 
+                final BirdDTO birdDto
         ) 
     {
         try {
@@ -78,15 +83,24 @@ public class BirdIndexAdminApi {
         useReturnTypeSchema = false
     )
     @PostMapping(
-        value = "/create-name", 
+        value = "/bird/{id}/alt", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<IdResponseDTO> newSynonym(
-            @RequestBody @Valid final BirdSynonymDTO synonymDto
+            @Schema(
+                description = "The ID of the original bird entry"
+            )
+            @PathVariable 
+            @Valid 
+            @Min(1) 
+                final long id,
+            @RequestBody 
+            @Valid 
+                final BirdSynonymDTO synonymDto
         ) 
     {
         try {
-            final BirdEntry original = service.getEntry(synonymDto.getOriginalId());
+            final BirdEntry original = service.getEntry(id);
             BirdSynonym synonym = synonymDto.toEntity();
             synonym.setOriginalEntry(original);
             synonym = service.save(synonym);
