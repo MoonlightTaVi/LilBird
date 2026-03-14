@@ -22,13 +22,13 @@ import jakarta.validation.Valid;
 
 /**
  * The RESTful controller for the {@link BirdIndexService}.
- * Allows viewing and managing the information about bird names
- * and other textual information.
+ * Allows managing the information about bird names
+ * and other details <b>by administators</b>.
  */
 @RestController
-@RequestMapping("api/birds")
+@RequestMapping("api/admin/birds")
 @Validated
-public class BirdIndexApi {
+public class BirdIndexAdminApi {
 
     @Autowired
     private BirdIndexService service;
@@ -46,7 +46,7 @@ public class BirdIndexApi {
         useReturnTypeSchema = false
     )
     @PostMapping(
-        value = "user/create", 
+        value = "/create", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<IdResponseDTO> newEntry(
