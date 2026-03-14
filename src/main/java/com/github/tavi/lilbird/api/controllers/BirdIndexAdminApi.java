@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.HandledServerException;
 import com.github.tavi.lilbird.api.dto.BirdDTO;
+import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
 import com.github.tavi.lilbird.api.dto.IdResponseDTO;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
+import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +59,39 @@ public class BirdIndexAdminApi {
             final BirdEntry entry = service.save(birdDto.toEntity());
             return new IdResponseDTO()
                     .created(entry);
+        } catch (final HandledServerException e) {
+            return new IdResponseDTO()
+                    .badRequest(e);
+        }
+    }
+
+    
+    @Operation(summary = "Assigns a new alternative name to the existing bird.")
+    @ApiResponse(
+        description = "The body contains the ID of the new synonym entity",
+        responseCode = "200",
+        useReturnTypeSchema = true
+    )
+    @ApiResponse(
+        description = "The request could not be processed (details provided)",
+        responseCode = "400",
+        useReturnTypeSchema = false
+    )
+    @PostMapping(
+        value = "/create-name", 
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<IdResponseDTO> newSynonym(
+            @RequestBody @Valid final BirdSynonymDTO synonymDto
+        ) 
+    {
+        try {
+            final BirdEntry original = service.getEntry(synonymDto.getOriginalId());
+            BirdSynonym synonym = synonymDto.toEntity();
+            synonym.setOriginalEntry(original);
+            synonym = service.save(synonym);
+            return new IdResponseDTO()
+                    .created(synonym);
         } catch (final HandledServerException e) {
             return new IdResponseDTO()
                     .badRequest(e);

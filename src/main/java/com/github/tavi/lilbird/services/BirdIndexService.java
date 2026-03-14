@@ -104,7 +104,11 @@ public class BirdIndexService {
     public BirdEntry getEntry(final long id) {
         final BirdEntry entry = entriesRepo
                 .findById(id)
-                .orElse(null);
+                .orElseThrow(
+                    () -> new HandledServerException(
+                        "The entry by this ID does not exist"
+                    )
+                );
         return entry;
     }
 
@@ -125,7 +129,7 @@ public class BirdIndexService {
      * @return              A list of synonymous names for this bird.
      */
     public List<BirdSynonym> getSynonymsOf(final long entryId) {
-        final List<BirdSynonym> synonyms = null;//synonymsRepo.findByReference(entryId);
+        final List<BirdSynonym> synonyms = synonymsRepo.findByReference(entryId);
         return synonyms;
     }
 

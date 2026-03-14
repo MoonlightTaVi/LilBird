@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.github.tavi.lilbird.api.HandledServerException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
+import com.github.tavi.lilbird.db.entities.BirdSynonym;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -42,7 +43,7 @@ public class IdResponseDTO {
 
     /**
      * A shortcut for an HTTP response about the successful
-     * creation of a new database entity.
+     * creation of a new database entity (for bird entries).
      * 
      * @param entry     The bird entry that was successfully created.
      * @return          An HTTP response with details about this operation.
@@ -50,6 +51,19 @@ public class IdResponseDTO {
     public ResponseEntity<IdResponseDTO> created(final BirdEntry entry) {
         id = entry.getId();
         message = "A new entry has been successfully created";
+        return ResponseEntity.ok(this);
+    }
+
+    /**
+     * A shortcut for an HTTP response about the successful
+     * creation of a new database entity (for bird name synonyms).
+     * 
+     * @param synonym   The bird name synonym that was successfully created.
+     * @return          An HTTP response with details about this operation.
+     */
+    public ResponseEntity<IdResponseDTO> created(final BirdSynonym synonym) {
+        id = synonym.getId();
+        message = "A new synonym has been successfully created";
         return ResponseEntity.ok(this);
     }
 
