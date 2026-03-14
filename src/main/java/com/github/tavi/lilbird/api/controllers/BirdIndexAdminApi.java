@@ -22,6 +22,7 @@ import com.github.tavi.lilbird.services.BirdIndexService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
@@ -32,7 +33,7 @@ import jakarta.validation.constraints.Min;
  * and other details <b>by administators</b>.
  */
 @RestController
-@RequestMapping("api/pvt")
+@RequestMapping("api/admin")
 @Validated
 public class BirdIndexAdminApi {
 
@@ -41,16 +42,18 @@ public class BirdIndexAdminApi {
 
 
     @Operation(summary = "Create a new entry for a bird.")
-    @ApiResponse(
-        description = "The body contains the ID of the new bird entry",
-        responseCode = "200",
-        useReturnTypeSchema = true
-    )
-    @ApiResponse(
-        description = "The request could not be processed (details provided)",
-        responseCode = "400",
-        useReturnTypeSchema = false
-    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            description = "The body contains the ID of the new bird entry",
+            responseCode = "200",
+            useReturnTypeSchema = true
+        ),
+        @ApiResponse(
+            description = "The request could not be processed (details provided)",
+            responseCode = "400",
+            useReturnTypeSchema = false
+        )
+    })
     @PostMapping(
         value = "/bird", 
         produces = MediaType.APPLICATION_JSON_VALUE
@@ -68,39 +71,37 @@ public class BirdIndexAdminApi {
         } catch (final HandledServerException e) {
             return new IdResponseDTO()
                     .badRequest(e);
-        } catch (final RuntimeException e) {
-            return ResponseEntity
-                    .internalServerError()
-                    .body(null);
         }
     }
 
     
     @Operation(summary = "Assigns a new alternative name to the existing bird.")
-    @ApiResponse(
-        description = "The body contains the ID of the new synonym entity",
-        responseCode = "200",
-        useReturnTypeSchema = true
-    )
-    @ApiResponse(
-        description = "The request could not be processed (details provided)",
-        responseCode = "400",
-        useReturnTypeSchema = false
-    )
-    @ApiResponse(
-        description = "The entry does not exist",
-        responseCode = "404",
-        useReturnTypeSchema = false
-    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            description = "The body contains the ID of the new synonym entity",
+            responseCode = "200",
+            useReturnTypeSchema = true
+        ),
+        @ApiResponse(
+            description = "The request could not be processed (details provided)",
+            responseCode = "400",
+            useReturnTypeSchema = false
+        ),
+        @ApiResponse(
+            description = "The entry does not exist",
+            responseCode = "404",
+            useReturnTypeSchema = false
+        )
+    })
     @PostMapping(
-        value = "/bird/{id}/alt", 
+        value = "/bird/{id}/alt-name", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<IdResponseDTO> newSynonym(
             @Schema(
                 description = "The ID of the original bird entry"
             )
-            @PathVariable 
+            @PathVariable("id")
             @Valid 
             @Min(1) 
                 final long id,
@@ -122,10 +123,6 @@ public class BirdIndexAdminApi {
         } catch (final HandledServerException e) {
             return new IdResponseDTO()
                     .badRequest(e);
-        } catch (final RuntimeException e) {
-            return ResponseEntity
-                    .internalServerError()
-                    .body(null);
         }
     }
 

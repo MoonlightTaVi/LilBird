@@ -47,7 +47,7 @@ public class BirdIndexApi {
         useReturnTypeSchema = true
     )
     @GetMapping(
-        value = "/", 
+        value = "", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<BirdEntry>> listAll() {
@@ -74,7 +74,7 @@ public class BirdIndexApi {
         )
     })
     @GetMapping(
-        value = "/{id}/alt", 
+        value = "/{id}/alt-names", 
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<BirdSynonym>> synonymsOf(
