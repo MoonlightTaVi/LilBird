@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.dto.BirdDTO;
 import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
-import com.github.tavi.lilbird.api.dto.IdResponseDTO;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
@@ -32,7 +31,10 @@ import jakarta.validation.constraints.Min;
  * and other details <b>by administators</b>.
  */
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping(
+    value = "api/admin",
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
 @Validated
 public class BirdIndexAdminApi {
 
@@ -45,7 +47,7 @@ public class BirdIndexAdminApi {
     )
     @ApiResponses(value = {
         @ApiResponse(
-            description = "The body contains the ID of the new bird entry",
+            description = "Returns the new bird entry",
             responseCode = "200",
             useReturnTypeSchema = true
         ),
@@ -55,19 +57,16 @@ public class BirdIndexAdminApi {
             content = @Content
         )
     })
-    @PostMapping(
-        value = "/bird", 
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<IdResponseDTO> newEntry(
+    @PostMapping("/bird")
+    public ResponseEntity<BirdEntry> newEntry(
             @RequestBody 
             @Valid 
                 final BirdDTO birdDto
         ) 
     {
         final BirdEntry entry = service.save(birdDto.toEntity());
-        return new IdResponseDTO()
-                .created(entry);
+        return ResponseEntity
+                .ok(entry);
     }
 
     
@@ -76,7 +75,7 @@ public class BirdIndexAdminApi {
     )
     @ApiResponses(value = {
         @ApiResponse(
-            description = "The body contains the ID of the new synonym entity",
+            description = "Returns the new synonym entity",
             responseCode = "200",
             useReturnTypeSchema = true
         ),
@@ -91,17 +90,18 @@ public class BirdIndexAdminApi {
             content = @Content
         )
     })
-    @PostMapping(
-        value = "/bird/{id}/alt-name", 
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<IdResponseDTO> newSynonym(
-            @Schema(
-                description = "The ID of the original bird entry"
+    @PostMapping("/bird/{id}/alt-name")
+    public ResponseEntity<BirdSynonym> newSynonym(
+            @Valid
+            @Min(
+                value = 1,
+                message = "The ID is always > 0"
             )
-            @PathVariable("id")
-            @Valid 
-            @Min(1) 
+            @Schema(
+                description = "The ID of an existing bird entry",
+                example = "1"
+            )
+            @PathVariable("id") 
                 final long id,
             @RequestBody 
             @Valid 
@@ -112,8 +112,8 @@ public class BirdIndexAdminApi {
         BirdSynonym synonym = synonymDto.toEntity();
         synonym.setOriginalEntry(original);
         synonym = service.save(synonym);
-        return new IdResponseDTO()
-                .created(synonym);
+        return ResponseEntity
+                .ok(synonym);
     }
 
 }

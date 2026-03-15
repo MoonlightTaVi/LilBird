@@ -30,7 +30,10 @@ import jakarta.validation.constraints.Min;
  * information that is managed by administrators.
  */
 @RestController
-@RequestMapping("api/birds")
+@RequestMapping(
+    value = "api/birds", 
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
 @Validated
 public class BirdIndexApi {
 
@@ -46,10 +49,7 @@ public class BirdIndexApi {
         responseCode = "200",
         useReturnTypeSchema = true
     )
-    @GetMapping(
-        value = "", 
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping("")
     public ResponseEntity<List<BirdEntry>> listAll() {
         final List<BirdEntry> entryList = service.getEntryList();
         return ResponseEntity.ok(entryList);
@@ -71,10 +71,7 @@ public class BirdIndexApi {
             content = @Content
         )
     })
-    @GetMapping(
-        value = "/{id}/alt-names", 
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping("/{id}/alt-names")
     public ResponseEntity<List<BirdSynonym>> synonymsOf(
             @Valid
             @Min(

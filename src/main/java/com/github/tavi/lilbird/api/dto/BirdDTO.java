@@ -29,7 +29,7 @@ public class BirdDTO {
         message = "The primary name must be concise (< 16 symbols)"
     )
     @Schema(
-        description = "The primary name of the bird",
+        description = "The primary (unique) name of the bird, in latin symbols",
         example = "Corvus corax"
     )
     private String title;

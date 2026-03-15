@@ -1,7 +1,10 @@
 package com.github.tavi.lilbird.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +22,7 @@ import lombok.NoArgsConstructor;
 /**
  * The entity for the table of synonyms of bird names.
  */
+@JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "Synonyms")
 @Data
@@ -50,6 +54,10 @@ public class BirdSynonym {
      */
     @NotNull
     @Column(nullable = false)
+    @Schema(
+        description = "The alternative name (synonym) of this bird",
+        example = "Owl"
+    )
     private String name;
 
     /**
@@ -57,6 +65,10 @@ public class BirdSynonym {
      * (for example, used language, dialect, etc.);
      * may be a JSON string.
      */
+    @Schema(
+        description = "(Optional) Additional comment on this synonym",
+        example = "They are called 'owls' because the are 'owling' in the night :)"
+    )
     private String comment = null;
 
 }

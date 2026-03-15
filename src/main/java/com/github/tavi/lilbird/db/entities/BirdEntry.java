@@ -1,5 +1,9 @@
 package com.github.tavi.lilbird.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +24,7 @@ import lombok.NoArgsConstructor;
  * Even if the database contains any other kind of data (not birds),
  * it is convenient to call each unique entry "a bird".
  */
+@JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "Entries")
 @Data
@@ -39,12 +44,20 @@ public class BirdEntry {
      * May be used as an index for an optimized search.
      */
     @NotNull
+    @Schema(
+        description = "The primary (unique) name, in latin symbols",
+        example = "Corvus corax"
+    )
     @Column(unique = true, nullable = false)
     private String title;
 
     /**
      * The secondary (optional) name of the entry.
      */
+    @Schema(
+        description = "(Optionally) Some more common name of the bird",
+        example = "Common raven"
+    )
     @Column(name = "common_name")
     private String commonName = null;
 
