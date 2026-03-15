@@ -10,8 +10,8 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.github.tavi.lilbird.api.HandledServerException;
-import com.github.tavi.lilbird.api.NotFoundException;
+import com.github.tavi.lilbird.api.exception.HandledServerException;
+import com.github.tavi.lilbird.api.exception.NotFoundException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.db.repositories.BirdEntriesRepo;
@@ -87,6 +87,9 @@ public class BirdIndexService {
             synonym = synonymsRepo.save(synonym);
         } catch (final OptimisticLockingFailureException e) {
             log.failed(synonym, e);
+            throw new HandledServerException(
+                "The synonym is currently locked (try again later)"
+            );
         }
 
         return synonym;

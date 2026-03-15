@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.api.HandledServerException;
-import com.github.tavi.lilbird.api.NotFoundException;
 import com.github.tavi.lilbird.api.dto.BirdDTO;
 import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
 import com.github.tavi.lilbird.api.dto.IdResponseDTO;
@@ -20,6 +18,7 @@ import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -41,7 +40,9 @@ public class BirdIndexAdminApi {
     private BirdIndexService service;
 
 
-    @Operation(summary = "Create a new entry for a bird.")
+    @Operation(
+        summary = "Create a new entry for a bird."
+    )
     @ApiResponses(value = {
         @ApiResponse(
             description = "The body contains the ID of the new bird entry",
@@ -51,7 +52,7 @@ public class BirdIndexAdminApi {
         @ApiResponse(
             description = "The request could not be processed (details provided)",
             responseCode = "400",
-            useReturnTypeSchema = false
+            content = @Content
         )
     })
     @PostMapping(
@@ -64,18 +65,15 @@ public class BirdIndexAdminApi {
                 final BirdDTO birdDto
         ) 
     {
-        try {
-            final BirdEntry entry = service.save(birdDto.toEntity());
-            return new IdResponseDTO()
-                    .created(entry);
-        } catch (final HandledServerException e) {
-            return new IdResponseDTO()
-                    .badRequest(e);
-        }
+        final BirdEntry entry = service.save(birdDto.toEntity());
+        return new IdResponseDTO()
+                .created(entry);
     }
 
     
-    @Operation(summary = "Assigns a new alternative name to the existing bird.")
+    @Operation(
+        summary = "Assigns a new alternative name to the existing bird."
+    )
     @ApiResponses(value = {
         @ApiResponse(
             description = "The body contains the ID of the new synonym entity",
@@ -85,12 +83,12 @@ public class BirdIndexAdminApi {
         @ApiResponse(
             description = "The request could not be processed (details provided)",
             responseCode = "400",
-            useReturnTypeSchema = false
+            content = @Content
         ),
         @ApiResponse(
             description = "The entry does not exist",
             responseCode = "404",
-            useReturnTypeSchema = false
+            content = @Content
         )
     })
     @PostMapping(
@@ -110,20 +108,12 @@ public class BirdIndexAdminApi {
                 final BirdSynonymDTO synonymDto
         ) 
     {
-        try {
-            final BirdEntry original = service.getEntry(id);
-            BirdSynonym synonym = synonymDto.toEntity();
-            synonym.setOriginalEntry(original);
-            synonym = service.save(synonym);
-            return new IdResponseDTO()
-                    .created(synonym);
-        } catch (final NotFoundException e) {
-            return new IdResponseDTO()
-                    .notFound(e);
-        } catch (final HandledServerException e) {
-            return new IdResponseDTO()
-                    .badRequest(e);
-        }
+        final BirdEntry original = service.getEntry(id);
+        BirdSynonym synonym = synonymDto.toEntity();
+        synonym.setOriginalEntry(original);
+        synonym = service.save(synonym);
+        return new IdResponseDTO()
+                .created(synonym);
     }
 
 }

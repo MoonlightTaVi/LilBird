@@ -3,7 +3,6 @@ package com.github.tavi.lilbird.api.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.tavi.lilbird.api.exception.NotFoundException;
 import com.github.tavi.lilbird.db.entities.BirdEntry;
 import com.github.tavi.lilbird.db.entities.BirdSynonym;
 import com.github.tavi.lilbird.services.BirdIndexService;
@@ -66,11 +66,9 @@ public class BirdIndexApi {
             useReturnTypeSchema = true
         ),
         @ApiResponse(
-            description = "Empty array (a bird by this ID does not exist)",
+            description = "The entry by the provided ID does not exist",
             responseCode = "404",
-            content = @Content(
-                schema = @Schema(example = "[]")
-            )
+            content = @Content
         )
     })
     @GetMapping(
@@ -91,13 +89,13 @@ public class BirdIndexApi {
                 final long id
         ) 
     {
-        final List<BirdSynonym> entryList = service.getSynonymsOf(id);
-        if (entryList.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(entryList);
+        if (!service.entryExists(id)) {
+            throw new NotFoundException(
+                    "An entry by this ID does not exist"
+                );
         }
 
+        final List<BirdSynonym> entryList = service.getSynonymsOf(id);
         return ResponseEntity.ok(entryList);
     }
 

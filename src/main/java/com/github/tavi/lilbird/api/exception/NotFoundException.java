@@ -1,11 +1,10 @@
-package com.github.tavi.lilbird.api;
+package com.github.tavi.lilbird.api.exception;
 
 
 /**
- * This class extends {@link HandledServerException} and is used
- * specifically for HTTP 404 responses.
+ * A simple class designed specifically for HTTP 404 responses.
  */
-public class NotFoundException extends HandledServerException {
+public class NotFoundException extends RuntimeException {
 
     /**
      * Creates a new HTTP 404 exception with the provided
