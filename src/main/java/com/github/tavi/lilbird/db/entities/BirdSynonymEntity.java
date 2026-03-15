@@ -3,8 +3,8 @@ package com.github.tavi.lilbird.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.tavi.lilbird.models.BirdSynonym;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,17 +23,21 @@ import lombok.NoArgsConstructor;
  */
 @JsonInclude(Include.NON_NULL)
 @Entity
-@Table(name = "Synonyms")
+@Table(
+    name = "Synonyms"
+)
 @Data
 @NoArgsConstructor
-public class BirdSynonym {
+public class BirdSynonymEntity implements BirdSynonym {
 
     @Min(
         value = 1,
         message = "The ID is always > 0"
     )
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
     /**
@@ -47,28 +50,13 @@ public class BirdSynonym {
         referencedColumnName = "id", 
         nullable = false
     )
-    private BirdEntry originalEntry;
+    private BirdEntryEntity originalEntry;
 
-    /**
-     * The synonymous name for the bird.
-     */
-    @NotNull
-    @Column(nullable = false)
-    @Schema(
-        description = "The alternative name (synonym) of this bird",
-        example = "Owl"
+    @Column(
+        nullable = false
     )
     private String name;
 
-    /**
-     * Some additional comment on this synonym
-     * (for example, used language, dialect, etc.);
-     * may be a JSON string.
-     */
-    @Schema(
-        description = "(Optional) Additional comment on this synonym",
-        example = "They are called 'owls' because the are 'owling' in the night :)"
-    )
     private String comment = null;
 
 }

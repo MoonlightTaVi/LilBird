@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.exception.NotFoundException;
-import com.github.tavi.lilbird.db.entities.BirdEntry;
-import com.github.tavi.lilbird.db.entities.BirdSynonym;
+import com.github.tavi.lilbird.db.entities.BirdEntryEntity;
+import com.github.tavi.lilbird.db.entities.BirdSynonymEntity;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,8 +50,8 @@ public class BirdIndexApi {
         useReturnTypeSchema = true
     )
     @GetMapping("")
-    public ResponseEntity<List<BirdEntry>> listAll() {
-        final List<BirdEntry> entryList = service.getEntryList();
+    public ResponseEntity<List<BirdEntryEntity>> listAll() {
+        final List<BirdEntryEntity> entryList = service.getEntryList();
         return ResponseEntity.ok(entryList);
     }
 
@@ -72,7 +72,7 @@ public class BirdIndexApi {
         )
     })
     @GetMapping("/{id}/alt-names")
-    public ResponseEntity<List<BirdSynonym>> synonymsOf(
+    public ResponseEntity<List<BirdSynonymEntity>> synonymsOf(
             @Valid
             @Min(
                 value = 1,
@@ -92,7 +92,7 @@ public class BirdIndexApi {
                 );
         }
 
-        final List<BirdSynonym> entryList = service.getSynonymsOf(id);
+        final List<BirdSynonymEntity> entryList = service.getSynonymsOf(id);
         return ResponseEntity.ok(entryList);
     }
 

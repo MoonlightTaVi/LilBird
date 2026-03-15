@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.api.dto.BirdDTO;
+import com.github.tavi.lilbird.api.dto.BirdEntryDTO;
 import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
-import com.github.tavi.lilbird.db.entities.BirdEntry;
-import com.github.tavi.lilbird.db.entities.BirdSynonym;
+import com.github.tavi.lilbird.db.entities.BirdEntryEntity;
+import com.github.tavi.lilbird.db.entities.BirdSynonymEntity;
 import com.github.tavi.lilbird.services.BirdIndexService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,13 +58,13 @@ public class BirdIndexAdminApi {
         )
     })
     @PostMapping("/bird")
-    public ResponseEntity<BirdEntry> newEntry(
+    public ResponseEntity<BirdEntryEntity> newEntry(
             @RequestBody 
             @Valid 
-                final BirdDTO birdDto
+                final BirdEntryDTO birdDto
         ) 
     {
-        final BirdEntry entry = service.save(birdDto.toEntity());
+        final BirdEntryEntity entry = service.save(birdDto.toEntity());
         return ResponseEntity
                 .ok(entry);
     }
@@ -91,7 +91,7 @@ public class BirdIndexAdminApi {
         )
     })
     @PostMapping("/bird/{id}/alt-name")
-    public ResponseEntity<BirdSynonym> newSynonym(
+    public ResponseEntity<BirdSynonymEntity> newSynonym(
             @Valid
             @Min(
                 value = 1,
@@ -108,8 +108,8 @@ public class BirdIndexAdminApi {
                 final BirdSynonymDTO synonymDto
         ) 
     {
-        final BirdEntry original = service.getEntry(id);
-        BirdSynonym synonym = synonymDto.toEntity();
+        final BirdEntryEntity original = service.getEntry(id);
+        BirdSynonymEntity synonym = synonymDto.toEntity();
         synonym.setOriginalEntry(original);
         synonym = service.save(synonym);
         return ResponseEntity

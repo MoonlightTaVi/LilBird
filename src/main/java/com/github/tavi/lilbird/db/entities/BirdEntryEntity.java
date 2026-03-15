@@ -2,8 +2,8 @@ package com.github.tavi.lilbird.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.tavi.lilbird.models.BirdEntry;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,38 +25,27 @@ import lombok.NoArgsConstructor;
  */
 @JsonInclude(Include.NON_NULL)
 @Entity
-@Table(name = "Entries")
+@Table(
+    name = "Entries"
+)
 @Data
 @NoArgsConstructor
-public class BirdEntry {
+public class BirdEntryEntity implements BirdEntry {
 
     @Min(
         value = 1,
         message = "The ID is always > 0"
     )
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
-    /**
-     * The primary (unique) name of the entry.
-     * May be used as an index for an optimized search.
-     */
-    @NotNull
-    @Schema(
-        description = "The primary (unique) name, in latin symbols",
-        example = "Corvus corax"
-    )
+    
     @Column(unique = true, nullable = false)
     private String title;
 
-    /**
-     * The secondary (optional) name of the entry.
-     */
-    @Schema(
-        description = "(Optionally) Some more common name of the bird",
-        example = "Common raven"
-    )
     @Column(name = "common_name")
     private String commonName = null;
 
