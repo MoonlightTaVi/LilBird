@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.tavi.lilbird.models.BirdEntry;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +34,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BirdEntryEntity implements BirdEntry {
 
+    /**
+     * Converts the raw (original) bird title to a normal form
+     * that can be used in searches.
+     * <p>
+     * The normal form is case-insensitive and does not include spaces.
+     * 
+     * @param title     The original unique name for the bird entry.
+     * @return          The same name, but normalized
+     */
+    public static String normalize(final String title) {
+        return title.toLowerCase()
+                .replace("-", "_")
+                .replace("\s", "-");
+    }
+
+
     @Min(
         value = 1,
         message = "The ID is always > 0"
@@ -42,11 +60,43 @@ public class BirdEntryEntity implements BirdEntry {
     )
     private Long id;
 
-    
-    @Column(unique = true, nullable = false)
+    @Column(
+        nullable = false
+    )
     private String title;
 
-    @Column(name = "common_name")
+    @NotNull
+    @Schema(
+        description = "The normalized title",
+        example = "corvus-corax"
+    )
+    @Column(
+        name = "title_id",
+        unique = true, 
+        nullable = false
+    )
+    private String titleId;
+
+    @Column(
+        name = "common_name"
+    )
     private String commonName = null;
 
+
+    /**
+     * Sets both displayed title (raw value)
+     * and ID title (normalized value) to this entity.
+     * <p>
+     * The normalized value is an indexed column,
+     * and it may be used as an alternative to the {@code long} ID
+     * for searching.
+     * 
+     * @param title     The original unique name for the bird entry.
+     * 
+     * @see             BirdEntryEntity#normalize(String)
+     */
+    public void setTitle(final String title) {
+        this.title = title;
+        titleId = BirdEntryEntity.normalize(title);
+    }
 }

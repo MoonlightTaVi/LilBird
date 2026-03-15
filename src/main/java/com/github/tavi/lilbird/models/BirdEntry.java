@@ -24,8 +24,8 @@ public interface BirdEntry {
         message = "The primary name must be concise (< 16 symbols)"
     )
     @Pattern(
-        message = "The title must contain only latin symbols, hyphens and underscores",
-        regexp = "[0-9a-zA-Z\\-]+"
+        message = "The title must contain only latin symbols, digits and hyphens",
+        regexp = "[0-9a-zA-Z\\-\s]+"
     )
     @Schema(
         description = "The primary (unique) name, in latin symbols",
