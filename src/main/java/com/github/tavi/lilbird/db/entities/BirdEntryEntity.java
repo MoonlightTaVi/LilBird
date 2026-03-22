@@ -45,8 +45,7 @@ public class BirdEntryEntity implements BirdEntry {
      */
     public static String normalize(final String title) {
         return title.toLowerCase()
-                .replace("-", "_")
-                .replace("\s", "-");
+                .replace("\s", "+");
     }
 
 
@@ -65,10 +64,17 @@ public class BirdEntryEntity implements BirdEntry {
     )
     private String title;
 
+    /**
+     * Same as {@code title}, but normalized.
+     * This value is set automatically, based on the {@code title} field.
+     * 
+     * @see #setTitle(String)
+     * @see BirdEntryEntity#normalize(String)
+     */
     @NotNull
     @Schema(
         description = "The normalized title",
-        example = "corvus-corax"
+        example = "corvus+corax"
     )
     @Column(
         name = "title_id",
