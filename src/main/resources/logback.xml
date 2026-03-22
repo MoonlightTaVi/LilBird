@@ -1,0 +1,42 @@
+<configuration>
+    <property name="cdate" value="%d{yyyy-MM-dd}"/>
+    <property name="ctime" value="%d{HH:mm:ss.SSS}"/>
+    <property name="cpattern" value="${ctime} [%thread] %-5level [%logger{36}]: %msg%n"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${cpattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/libird.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/archive/${cdate}-libird.log</fileNamePattern>
+            <maxHistory>5</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${cpattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SPRING" class="ch.qos.logback.core.FileAppender">
+        <file>logs/spring.log</file>
+        <encoder>
+            <pattern>${cpattern}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="SPRING"/>
+    </logger>
+    <logger name="com.github.tavi" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="APP"/>
+    </logger>
+
+</configuration>
