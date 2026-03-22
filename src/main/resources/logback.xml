@@ -23,6 +23,7 @@
 
     <appender name="SPRING" class="ch.qos.logback.core.FileAppender">
         <file>logs/spring.log</file>
+        <append>false</append>
         <encoder>
             <pattern>${cpattern}</pattern>
         </encoder>
@@ -34,7 +35,7 @@
     <logger name="org.springframework" level="INFO" additivity="false">
         <appender-ref ref="SPRING"/>
     </logger>
-    <logger name="com.github.tavi" level="INFO" additivity="false">
+    <logger name="com.github.tavi" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="APP"/>
     </logger>
