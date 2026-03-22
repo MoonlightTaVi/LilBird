@@ -45,9 +45,7 @@ public class BirdIndexApi {
         summary = "Get list of all birds"
     )
     @ApiResponse(
-        description = "Successful",
-        responseCode = "200",
-        useReturnTypeSchema = true
+        responseCode = "200"
     )
     @GetMapping("")
     public ResponseEntity<List<BirdEntryEntity>> listAll() {
@@ -57,16 +55,37 @@ public class BirdIndexApi {
 
     
     @Operation(
+        summary = "Get a bird by its ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200"
+        ),
+        @ApiResponse(
+            description = "This entry does not exist",
+            responseCode = "404",
+            content = @Content
+        )
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<BirdEntryEntity> getById(
+            @PathVariable("id") 
+                final long id
+        ) 
+    {
+        return ResponseEntity.ok(service.getEntry(id));
+    }
+
+    
+    @Operation(
         summary = "Get list of alternative names for a bird"
     )
     @ApiResponses(value = {
         @ApiResponse(
-            description = "Successful",
-            responseCode = "200",
-            useReturnTypeSchema = true
+            responseCode = "200"
         ),
         @ApiResponse(
-            description = "The entry by the provided ID does not exist",
+            description = "This entry does not exist",
             responseCode = "404",
             content = @Content
         )
@@ -74,10 +93,7 @@ public class BirdIndexApi {
     @GetMapping("/{id}/alt-names")
     public ResponseEntity<List<BirdSynonymEntity>> synonymsOf(
             @Valid
-            @Min(
-                value = 1,
-                message = "The ID is always > 0"
-            )
+            @Min(1)
             @Schema(
                 description = "The ID of an existing bird entry",
                 example = "1"

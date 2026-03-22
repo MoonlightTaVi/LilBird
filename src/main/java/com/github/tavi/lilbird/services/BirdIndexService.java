@@ -131,6 +131,29 @@ public class BirdIndexService {
     }
 
     /**
+     * Finds the entry for the bird by its unique title ID.
+     * <p>
+     * The title should be normalized before the search.
+     * 
+     * @param titleId       The title ID of the bird.
+     * @return              The bird entity by this title ID if it exists.
+     * 
+     * @throws NotFoundException If the entity does not exist.
+     * 
+     * @see BirdEntryEntity#normalize(String)
+     */
+    public BirdEntryEntity getEntry(final String titleId) throws NotFoundException {
+        final BirdEntryEntity entry = entriesRepo
+                .findByTitle(titleId)
+                .orElseThrow(
+                    () -> new NotFoundException(
+                        "The entry by this title ID does not exist"
+                    )
+                );
+        return entry;
+    }
+
+    /**
      * Returns the list of all bird entries in the database.
      * 
      * @return              List of bird entries.
