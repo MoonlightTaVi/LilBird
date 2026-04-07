@@ -13,9 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
-import com.github.tavi.lilbird.api.dto.BirdEntryDTO;
-import com.github.tavi.lilbird.api.dto.BirdSynonymDTO;
-import com.github.tavi.lilbird.db.entities.BirdEntryEntity;
+import com.github.tavi.lilbird.api.dto.BirdCardDto;
+import com.github.tavi.lilbird.api.dto.NameGroupDto;
 
 
 /**
@@ -36,8 +35,7 @@ public class BasicHttpTests {
      */
     private final static int id = 1;
 
-    private static BirdEntryDTO birdDto;
-    private static BirdSynonymDTO synonymDto;
+    private static BirdCardDto cardDto;
 
 
     @Autowired
@@ -50,21 +48,22 @@ public class BasicHttpTests {
      */
     @BeforeAll
     public static void setup() {
-        birdDto = new BirdEntryDTO();
-        birdDto.setTitle("Raven");
-        birdDto.setCommonName("Draven");
+        cardDto = new BirdCardDto();
+        cardDto.setNameLatin("Raven");
+        cardDto.setNameMain("Draven");
 
-        synonymDto = new BirdSynonymDTO();
-        synonymDto.setName("DRAVEN");
-        synonymDto.setComment("Same, but ALL_CAPS.");
+        final NameGroupDto altNames = new NameGroupDto();
+        altNames.addName("RAVEN");
+        altNames.setEtymology("Same, but CAPS.");
+        cardDto.add(altNames);
     }
 
 
     @BeforeEach
     public void postBird() {
         rest.post()
-            .uri("/api/admin/bird")
-            .body(birdDto)
+            .uri("/api/v1/admin/birds")
+            .body(cardDto)
             .exchange()
             .expectStatus().is2xxSuccessful();
     }
@@ -74,7 +73,7 @@ public class BasicHttpTests {
     @DirtiesContext
     public void setupSuccess() {
         rest.get()
-            .uri("/api/birds")
+            .uri("/api/v1/birds")
             .exchange()
             .expectStatus().is2xxSuccessful();
     }
@@ -84,41 +83,20 @@ public class BasicHttpTests {
     public void getNotFound() {
         final int unexistentId = id + 1;
         rest.get()
-            .uri("/api/birds/{id}", unexistentId)
+            .uri("/api/v1/birds/{id}", unexistentId)
             .exchange()
             .expectStatus().isNotFound();
-    }
-
-    @Test
-    @DirtiesContext
-    public void postNotFound() {
-        final int unexistentId = id + 1;
-        rest.post()
-            .uri("/api/admin/bird/{id}/alt-name", unexistentId)
-            .body(synonymDto)
-            .exchange()
-            .expectStatus().isNotFound();
-    }
-
-    @Test
-    @DirtiesContext
-    public void postSynonymSuccess() {
-        rest.post()
-            .uri("/api/admin/bird/{id}/alt-name", id)
-            .body(synonymDto)
-            .exchange()
-            .expectStatus().is2xxSuccessful();
     }
 
     @Test
     @DirtiesContext
     public void titleSearchSuccess() {
         rest.get()
-            .uri("/api/search/title/{title}", birdDto.getTitle())
+            .uri("/api/v1/birds/{title}/card", cardDto.getNameLatin())
             .exchange()
             .expectStatus().is2xxSuccessful()
-            .expectBody(BirdEntryEntity.class)
-            .value(e -> assertEquals(id, e.getId()));
+            .expectBody(BirdCardDto.class)
+            .value(card -> assertEquals(cardDto, card));
     }
 
 }

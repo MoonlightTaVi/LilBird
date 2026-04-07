@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
  * The base interface for a bird entry model,
  * implemented by database entities and REST API data objects.
  */
-public interface BirdEntry {
+public interface BirdModel {
 
     /**
      * The primary (unique) name of the entry.
@@ -29,21 +29,18 @@ public interface BirdEntry {
     )
     @Schema(
         description = "The primary (unique) name, in latin symbols",
-        example = "Corvus corax"
+        example = "Bubo scandiacus"
     )
-    public String getTitle();
-
-    /**
-     * The secondary (optional) name of the entry.
-     */
+    public String getNameLatin();
+    
     @Size(
-        max = 20, 
-        message = "The secondary name must be concise (< 20 symbols)"
+        max = 32, 
+        message = "The name must be concise (< 32 symbols)"
     )
     @Schema(
-        description = "(Optionally) Some more common name of the bird",
-        example = "Common raven"
+        description = "An optional primary common name",
+        example = "Snowy owl"
     )
-    public String getCommonName();
+    public String getNameMain();
 
 }

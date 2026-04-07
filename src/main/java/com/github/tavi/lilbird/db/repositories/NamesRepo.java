@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.github.tavi.lilbird.db.entities.BirdSynonymEntity;
+import com.github.tavi.lilbird.db.entities.NameGroup;
 
 
 /**
  * The repository of synonyms for bird names.
  */
-public interface BirdSynonymsRepo extends JpaRepository<BirdSynonymEntity, Long> {
+public interface NamesRepo extends JpaRepository<NameGroup, Long> {
 
     /**
      * Filters all synonyms that correspond to the given bird and returns them.
@@ -21,9 +21,9 @@ public interface BirdSynonymsRepo extends JpaRepository<BirdSynonymEntity, Long>
      * @return              List of synonymous names for this bird.
      */
     @Query(
-        "SELECT s FROM BirdSynonymEntity s WHERE s.originalEntry.id = :entry_id"
+        "SELECT n FROM NameGroup n WHERE n.entry.id = :entry_id"
     )
-    public List<BirdSynonymEntity> findByReference(
+    public List<NameGroup> findByReference(
             @Param("entry_id") Long entryId
         );
     

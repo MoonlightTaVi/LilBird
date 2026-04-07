@@ -2,7 +2,7 @@ package com.github.tavi.lilbird.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.tavi.lilbird.models.BirdEntry;
+import com.github.tavi.lilbird.models.BirdModel;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -26,17 +26,14 @@ import lombok.NoArgsConstructor;
  * it is convenient to call each unique entry "a bird".
  */
 @JsonInclude(Include.NON_NULL)
-@Entity
-@Table(
-    name = "Entries"
-)
+@Entity(name = "Bird")
+@Table(name = "Birds")
 @Data
 @NoArgsConstructor
-public class BirdEntryEntity implements BirdEntry {
+public class BirdEntry implements BirdModel {
 
     /**
-     * Converts the raw (original) bird title to a normal form
-     * that can be used in searches.
+     * Converts the latin name to a normal form.
      * <p>
      * The normal form is case-insensitive and does not include spaces.
      * 
@@ -49,60 +46,47 @@ public class BirdEntryEntity implements BirdEntry {
     }
 
 
-    @Min(
-        value = 1,
-        message = "The ID is always > 0"
-    )
+    @Min(value = 1, message = "The ID is always > 0")
     @Id
-    @GeneratedValue(
-        strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(
-        nullable = false
-    )
-    private String title;
+    @Column(nullable = false)
+    private String nameLatin;
 
     /**
-     * Same as {@code title}, but normalized.
-     * This value is set automatically, based on the {@code title} field.
+     * The normalized name is used for DB indexation and searching.
+     * <p>
+     * <b>Do not set this value manually; it will be set automatically.</b>.
      * 
-     * @see #setTitle(String)
-     * @see BirdEntryEntity#normalize(String)
+     * @see #setNameLatin(String)
+     * @see BirdEntry#normalize(String)
      */
     @NotNull
     @Schema(
         description = "The normalized title",
-        example = "corvus+corax"
+        example = "bubo+scandiacus"
     )
     @Column(
-        name = "title_id",
+        name = "name_normal",
         unique = true, 
         nullable = false
     )
-    private String titleId;
+    private String nameNormal;
 
-    @Column(
-        name = "common_name"
-    )
-    private String commonName = null;
+    private String nameMain;
 
 
     /**
-     * Sets both displayed title (raw value)
-     * and ID title (normalized value) to this entity.
-     * <p>
-     * The normalized value is an indexed column,
-     * and it may be used as an alternative to the {@code long} ID
-     * for searching.
+     * Sets both displayed and normalized latin names.
      * 
-     * @param title     The original unique name for the bird entry.
+     * @param nameLatin     The original unique name for the bird entry.
      * 
-     * @see             BirdEntryEntity#normalize(String)
+     * @see                 BirdEntry#normalize(String)
      */
-    public void setTitle(final String title) {
-        this.title = title;
-        titleId = BirdEntryEntity.normalize(title);
+    public void setNameLatin(final String nameLatin) {
+        this.nameLatin = nameLatin;
+        nameNormal = BirdEntry.normalize(nameLatin);
     }
+    
 }

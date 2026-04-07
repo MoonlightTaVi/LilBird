@@ -6,18 +6,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.github.tavi.lilbird.db.entities.BirdEntryEntity;
+import com.github.tavi.lilbird.db.entities.BirdEntry;
 
 
 /**
  * The base repository for birds (as unique entries) in the database.
  */
-public interface BirdEntriesRepo extends JpaRepository<BirdEntryEntity, Long> {
+public interface BirdsRepo extends JpaRepository<BirdEntry, Long> {
 
     /**
-     * @see BirdEntryEntity#getTitleId()
+     * @see BirdEntry#getNameNormal()
      */
-    @Query("SELECT e FROM BirdEntryEntity e WHERE e.titleId = :title")
-    public Optional<BirdEntryEntity> findByTitle(@Param("title") String title);
+    @Query("SELECT b FROM Bird b WHERE b.nameNormal = :nameNormal")
+    public Optional<BirdEntry> findByTitle(@Param("nameNormal") String nameNormal);
 
 }
