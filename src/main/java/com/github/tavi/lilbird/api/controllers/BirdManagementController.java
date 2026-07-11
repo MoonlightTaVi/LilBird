@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.api.dto.BirdCardDto;
-import com.github.tavi.lilbird.api.dto.NameGroupDto;
-import com.github.tavi.lilbird.db.entities.BirdEntry;
+import com.github.tavi.lilbird.models.dto.BirdCardDto;
+import com.github.tavi.lilbird.models.entities.BirdEntity;
+import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,38 +31,34 @@ import jakarta.validation.Valid;
     produces = MediaType.APPLICATION_JSON_VALUE
 )
 @Validated
-public class BirdManagementApi {
+public class BirdManagementController {
 
     @Autowired
     private BirdCardsService service;
 
 
-    @Operation(
-        summary = "Create a new entry for a bird."
-    )
-    @ApiResponses(value = {
+    @Operation(summary = "Create a new entry for a bird.")
+    @ApiResponses({
         @ApiResponse(
-            description = "Returns the new bird entry",
+            description = "Returns the new bird entry unique ID",
             responseCode = "200"
         )
     })
     @PostMapping("/birds")
-    public ResponseEntity<BirdEntry> newEntry(
-            @RequestBody 
-            @Valid 
-                final BirdCardDto card
-        ) 
-    {
-        // Save new bird & get its ID
-        final BirdEntry birdEntry = service.save(card.extractBirdEntry());
+    public ResponseEntity<Long> newEntry(@RequestBody @Valid final BirdCardDto card) {
+        BirdEntity bird = new BirdEntity();
+        bird.setNameLatin(card.getNameLatin());
+        bird.setNameMain(card.getNameMain());
 
-        // Save all names & etymologies
-        card.getNames().stream()
-            .map(NameGroupDto::mapToEntity)
-            .peek(name -> name.setEntry(birdEntry))
-            .forEach(service::save);
+        // After the ID field is set:
+        bird = service.save(bird);
+        for (int i = 0; i < card.nameCount(); i++) {
+            final NameGroupEntity nameGroup = card.getNameGroup(i);
+            nameGroup.setEntry(bird);
+            service.save(nameGroup);
+        }
 
-        return ResponseEntity.ok(birdEntry);
+        return ResponseEntity.ok(bird.getId());
     }
 
 }

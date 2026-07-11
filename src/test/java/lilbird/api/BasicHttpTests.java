@@ -2,6 +2,8 @@ package lilbird.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
-import com.github.tavi.lilbird.api.dto.BirdCardDto;
-import com.github.tavi.lilbird.api.dto.NameGroupDto;
+import com.github.tavi.lilbird.models.dto.BirdCardDto;
+import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 
 
 /**
@@ -52,10 +54,10 @@ public class BasicHttpTests {
         cardDto.setNameLatin("Raven");
         cardDto.setNameMain("Draven");
 
-        final NameGroupDto altNames = new NameGroupDto();
-        altNames.addName("RAVEN");
-        altNames.setEtymology("Same, but CAPS.");
-        cardDto.add(altNames);
+        final NameGroupEntity altNameGroup = new NameGroupEntity();
+        altNameGroup.setNames(List.of("RAVEN"));
+        altNameGroup.setEtymology("Same, but CAPS.");
+        cardDto.addAltName(altNameGroup);
     }
 
 

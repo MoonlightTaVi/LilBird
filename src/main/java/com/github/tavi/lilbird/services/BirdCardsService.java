@@ -12,10 +12,10 @@ import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.exception.HandledServerException;
 import com.github.tavi.lilbird.api.exception.NotFoundException;
-import com.github.tavi.lilbird.db.entities.BirdEntry;
-import com.github.tavi.lilbird.db.entities.NameGroup;
-import com.github.tavi.lilbird.db.repositories.BirdsRepo;
-import com.github.tavi.lilbird.db.repositories.NamesRepo;
+import com.github.tavi.lilbird.models.entities.BirdEntity;
+import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.github.tavi.lilbird.repositories.BirdsRepo;
+import com.github.tavi.lilbird.repositories.NamesRepo;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -45,9 +45,9 @@ public class BirdCardsService {
      *                  to the database.
      * @return          This bird entity after it was saved.
      * 
-     * @see             BirdEntry
+     * @see             BirdEntity
      */
-    public BirdEntry save(@NotNull BirdEntry bird) {
+    public BirdEntity save(@NotNull BirdEntity bird) {
         log.saving(bird);
 
         try {
@@ -75,9 +75,9 @@ public class BirdCardsService {
      *                  to the database.
      * @return          This synonym entity after it was saved.
      * 
-     * @see             NameGroup
+     * @see             NameGroupEntity
      */
-    public NameGroup save(@NotNull NameGroup name) {
+    public NameGroupEntity save(@NotNull NameGroupEntity name) {
         log.saving(name);
         
         try {
@@ -96,7 +96,7 @@ public class BirdCardsService {
     // ==== READ ====
 
     /**
-     * Checks if a {@link BirdEntry} with this id exists.
+     * Checks if a {@link BirdEntity} with this id exists.
      * <p>
      * It is recommended to check for entity existence
      * before performing expensive operations.
@@ -117,8 +117,8 @@ public class BirdCardsService {
      * 
      * @throws NotFoundException If the entity does not exist.
      */
-    public BirdEntry getEntry(final long id) throws NotFoundException {
-        final BirdEntry entry = entriesRepo
+    public BirdEntity getEntry(final long id) throws NotFoundException {
+        final BirdEntity entry = entriesRepo
                 .findById(id)
                 .orElseThrow(
                     () -> new NotFoundException(
@@ -138,10 +138,10 @@ public class BirdCardsService {
      * 
      * @throws NotFoundException If the entity does not exist.
      * 
-     * @see BirdEntry#normalize(String)
+     * @see BirdEntity#normalize(String)
      */
-    public BirdEntry getEntry(final String nameNormal) throws NotFoundException {
-        final BirdEntry entry = entriesRepo
+    public BirdEntity getEntry(final String nameNormal) throws NotFoundException {
+        final BirdEntity entry = entriesRepo
                 .findByTitle(nameNormal)
                 .orElseThrow(
                     () -> new NotFoundException(
@@ -156,7 +156,7 @@ public class BirdCardsService {
      * 
      * @return              List of bird entries.
      */
-    public List<BirdEntry> getEntryList() {
+    public List<BirdEntity> getBirdNames() {
         return entriesRepo.findAll();
     }
 
@@ -167,8 +167,8 @@ public class BirdCardsService {
      * @param entryId       A unique ID of the bird.
      * @return              A list of synonymous names for this bird.
      */
-    public List<NameGroup> getNamesOf(final long entryId) {
-        final List<NameGroup> synonyms = namesRepo.findByReference(entryId);
+    public List<NameGroupEntity> getNamesOf(final long entryId) {
+        final List<NameGroupEntity> synonyms = namesRepo.findByReference(entryId);
         return synonyms;
     }
 
@@ -178,7 +178,7 @@ public class BirdCardsService {
      * @param entry         The entry on the bird.
      * @return              A list of synonymous names for this bird.
      */
-    public List<NameGroup> getNamesOf(@NotNull final BirdEntry entry) {
+    public List<NameGroupEntity> getNamesOf(@NotNull final BirdEntity entry) {
         return getNamesOf(entry.getId());
     }
 
@@ -206,7 +206,7 @@ public class BirdCardsService {
          * 
          * @param entry     The entry that is being saved.
          */
-        void saving(final BirdEntry entry) {
+        void saving(final BirdEntity entry) {
             log.debug("Saving an entry: {}", entry);
         }
         
@@ -215,7 +215,7 @@ public class BirdCardsService {
          * 
          * @param synonym   The synonym that is being saved.
          */
-        void saving(final NameGroup synonym) {
+        void saving(final NameGroupEntity synonym) {
             log.debug("Saving a synonym: {}", synonym);
         }
 
@@ -225,7 +225,7 @@ public class BirdCardsService {
          * 
          * @param entry     The entry that already exists.
          */
-        void duplication(final BirdEntry entry) {
+        void duplication(final BirdEntity entry) {
             log.info("Duplication prevented: {}", entry);
         }
 
