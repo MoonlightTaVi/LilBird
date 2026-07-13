@@ -46,7 +46,7 @@ public class BirdListingController {
     @ApiResponse(responseCode = "200")
     @GetMapping
     public ResponseEntity<List<BirdEntity>> getBirds() {
-        final List<BirdEntity> birds = service.getBirdNames();
+        final List<BirdEntity> birds = service.getAllBirds();
         return ResponseEntity.ok(birds);
     }
 
@@ -65,7 +65,7 @@ public class BirdListingController {
     {
         final BirdCardDto card = new BirdCardDto();
 
-        final BirdEntity bird = service.getEntry(NameUtils.normalize(nameLatin));
+        final BirdEntity bird = service.getEntryByName(NameUtils.normalize(nameLatin));
         card.setNameLatin(bird.getNameLatin());
         card.setNameMain(bird.getNameMain());
 
@@ -90,7 +90,7 @@ public class BirdListingController {
             @PathVariable("id") final long id
         ) 
     {
-        return ResponseEntity.ok(service.getEntry(id));
+        return ResponseEntity.ok(service.getEntryById(id));
     }
 
     @Operation(summary = "Get list of alternative names for a bird"
