@@ -1,0 +1,24 @@
+type: object
+description: The core information about a bird
+properties:
+    id:
+      required: true
+      type: integer
+      format: int64
+      example: 1
+      description: The unique ID of the bird, >= 1
+    nameLatin:
+      required: true
+      type: text
+      example: Bubo scandiacus
+      description: The base latin name (unique)
+    nameNormal:
+      required: true
+      type: text
+      example: bubo+scandiacus
+      description: Same as nameLatin, but normalized for convenience
+    nameMain:
+      required: false
+      type: text
+      example: Snowy owl
+      description: The most common name

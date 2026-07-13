@@ -1,0 +1,38 @@
+type: object
+properties:
+  nameLatin:
+    required: true
+    type: text
+    example: Bubo scandiacus
+    description: The base latin name of the bird
+  nameMain:
+    required: false
+    type: text
+    example: Snowy owl
+    description: The main common name of the bird
+  etymologies:
+    required: true
+    type: array
+    description: A list of etimologies for the alternative names
+    items:
+      type: text
+      example:
+        - (example) They live far in the north, among snow deserts
+  altNames:
+    required: true
+    type: array
+    description: Groups of names for each etymology
+    items:
+      type: array
+      items:
+        example:
+          - Owl
+          - Polar owl
+  photoUrls:
+    required: true
+    type: array
+    description: A list of URLs to photos of this bird
+    items:
+      example:
+        - https://url1.com/photo.png
+        - https://url2.com/photo.jpeg

@@ -94,7 +94,7 @@ public class BasicHttpTests {
     @DirtiesContext
     public void titleSearchSuccess() {
         rest.get()
-            .uri("/api/v1/birds/{title}/card", cardDto.getNameLatin())
+            .uri("/api/v1/birds/cards/{title}", cardDto.getNameLatin())
             .exchange()
             .expectStatus().is2xxSuccessful()
             .expectBody(BirdCardDto.class)
