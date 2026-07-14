@@ -6,8 +6,6 @@ import java.util.List;
 import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,38 +17,13 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 public class BirdCardDto {
     
-    @NotBlank(
-        message = "The primary name cannot be blank"
-    )
-    @Pattern(
-        message = "The title must contain only latin symbols, digits and hyphens",
-        regexp = "[0-9a-zA-Z\\-\s]+"
-    )
-    @Schema(
-        description = "The primary (unique) name, in latin symbols",
-        example = "Bubo scandiacus"
-    )
     private String nameLatin;
 
-    @Schema(
-        description = "An optional primary common name",
-        example = "Snowy owl"
-    )
     private String nameMain;
 
 
-    @Schema(
-        description = "A list of ethymologies for the names of this bird",
-        type = "array",
-        example = "[\"First ethymology\", \"Another ethymology\"]"
-    )
     private List<String> etymologies = new ArrayList<>();
 
-    @Schema(
-        description = "A nested list of alternative names",
-        type = "array",
-        example = "[[\"One name for the first ethymology\"], [\"A couple of names\", \"for the second ethymology\"]]"
-    )
     private List<List<String>> altNames = new ArrayList<>();
 
     /** Photos of the bird from the Internet. */

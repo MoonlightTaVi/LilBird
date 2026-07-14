@@ -3,57 +3,12 @@ info:
   title: LilBird API for nBirds project
   description: The API documentation for LilBird/nBirds ornithology service
 servers:
-  url: http://localhost:8080
+  - url: http://localhost:8080
 paths:
   api/v1/birds:
-    get:
-      summary: Returns a simple list of all bird entries
-      description: The list contains only ID and the main latin & common names
-      responses:
-        "200":
-          description: A JSON array of all bird objects
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: './schemas/birds-list.yml'
+    $ref: './paths/birds-list.yml'
   api/v1/birds/{id}:
-    get:
-      summary: Returns a single bird entry by its ID
-      description: Each entry contains only the core information
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int64
-          description: The unique ID of the bird
-      responses:
-        "200":
-          description: A JSON object of the bird entry
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: './schemas/bird-entry.yml'
+    $ref: './paths/bird-entry.yml'
   api/v1/birds/cards/{name_latin}:
-    get:
-      summary: Returns a filled card with the information about the bird
-      description: Each card contains most of the important information for the bird
-      parameters:
-        - name: name_latin
-          in: path
-          required: true
-          description: The normalized latin name of the bird
-          schema:
-            type: text
-            example: bubo+scandiacus
-      responses:
-        "200":
-          description: A JSON object of the bird card
-          content:
-            application/json:
-              schema:
-                $ref: './schemas/bird-card.yml'
+    $ref: './paths/bird-card.yml'
 
