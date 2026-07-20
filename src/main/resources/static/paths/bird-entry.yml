@@ -1,10 +1,10 @@
 get:
-    summary: Returns a single bird entry by its ID
-    description: Each entry contains only the core information
+    summary: Returns a single bird entry by its ID.
+    description: Each entry contains only the core information.
     parameters:
       - name: id
         in: path
-        description: The unique ID of the bird
+        description: The unique ID of the bird.
         schema:
           type: integer
           format: int64
@@ -12,9 +12,10 @@ get:
           example: 1
     responses:
       "200":
-        description: A JSON object of the bird entry
+        description: A JSON object of the bird entry.
         content:
           application/json:
             schema:
-              type: object
               $ref: '../schemas/bird-entry.yml'
+      "404":
+        description: No such entry.

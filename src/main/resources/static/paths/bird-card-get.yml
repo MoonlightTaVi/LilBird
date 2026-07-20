@@ -1,0 +1,19 @@
+get:
+    summary: Returns a filled card with the information about the bird.
+    description: Each card contains most of the important information for the bird.
+    parameters:
+      - name: name_latin
+        in: path
+        description: The normalized latin name of the bird.
+        schema:
+          type: string
+          example: bubo+scandiacus
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/bird-card.yml'
+      "404":
+        description: No such entry

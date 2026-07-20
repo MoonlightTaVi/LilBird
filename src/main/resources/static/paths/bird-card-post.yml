@@ -1,0 +1,16 @@
+post:
+    summary: Create a new bird entry or update the existing one from the card.
+    requestBody:
+      description: A card that contains the information about the bird.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/bird-card.yml'
+    responses:
+      "200":
+        description: Created successfully.
+      "400":
+        description: Some of the parameters are invalid (see the schema).
+      "423":
+        description: When trying to update an existing entry which is currently locked.

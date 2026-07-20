@@ -1,9 +1,9 @@
 get:
-    summary: Returns a simple list of all bird entries
-    description: The list contains only ID and the main latin & common names
+    summary: Returns a simple list of all bird entries.
+    description: The list contains only ID and the main latin & common names.
     responses:
       "200":
-        description: A JSON array of all bird objects
+        description: A JSON array of all bird objects.
         content:
           application/json:
             schema:

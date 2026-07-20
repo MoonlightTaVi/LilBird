@@ -3,35 +3,38 @@ properties:
   nameLatin:
     type: string
     pattern: '[0-9a-zA-Z\\-\s]+'
-    description: The base latin name of the bird
+    description: The base latin name of the bird.
     example: Bubo scandiacus
   nameMain:
     type: string
-    description: The main common name of the bird
+    description: The main common name of the bird.
     example: Snowy owl
   etymologies:
     type: array
-    description: A list of etymologies for the alternative names
+    description: A list of etymologies for the alternative names.
     items:
       type: string
     example:
-      - "(example) They live far in the north, among snow deserts"
+      - From Middle English "oule", related to the sound of the owl's hoot.
+      - They inhabit polar regions.
   altNames:
     type: array
-    description: Groups of names for each etymology
+    description: Groups of names for each etymology.
     items:
       type: array
       items:
         type: string
     example:
-      - ["Snowy owl"]
-      - ["Owl", "Polar owl"]
+      - ["Owl"]
+      - ["Snowy owl", "Polar owl"]
   photoUrls:
     type: array
-    description: A list of URLs to photos of this bird
+    description: A list of URLs to photos of this bird.
     items:
       type: string
       format: uri
     example:
       - https://url1.com/photo.png
       - https://url2.com/photo.jpeg
+required:
+  - nameLatin

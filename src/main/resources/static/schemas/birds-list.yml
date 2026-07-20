@@ -1,4 +1,4 @@
 type: array
-description: A list of all of the birds, containing only the core information
+description: A list of all of the birds, containing only the core information.
 items:
   $ref: "./bird-entry.yml"

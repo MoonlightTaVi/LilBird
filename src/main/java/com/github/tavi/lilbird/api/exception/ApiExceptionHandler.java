@@ -20,7 +20,7 @@ import jakarta.validation.ValidationException;
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 
-    /** {@link HandledServerException} indicates HTTP 400. */
+    /** {@link HandledServerException} (HTTP 400). */
     @ExceptionHandler(HandledServerException.class)
     public ProblemDetail handleServerException(
         final HandledServerException e, final WebRequest request
@@ -33,7 +33,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 );
     }
 
-    /** {@link NotFoundException} indicates HTTP 404. */
+    /** {@link NotFoundException} (HTTP 404). */
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleServerException(
         final NotFoundException e, final WebRequest request
@@ -46,7 +46,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 );
     }
 
-    /** Jakarta bean/DTO validation exception. */
+    /** Jakarta bean/DTO validation exception (HTTP 400). */
     @ExceptionHandler(ValidationException.class)
     public ProblemDetail handleServerException(
         final ValidationException e, final WebRequest request
@@ -59,7 +59,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 );
     }
 
-    /** Database optimistic lock. */
+    /** Database optimistic lock on existing data update (HTTP 423). */
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ProblemDetail handleServerException(
         final OptimisticLockingFailureException e, final WebRequest request
