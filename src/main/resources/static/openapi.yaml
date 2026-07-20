@@ -7,9 +7,7 @@ servers:
 paths:
   api/v1/birds:
     $ref: './paths/birds-list.yml'
+  api/v1/birds/{name_latin}:
+    $ref: './paths/bird-card-get.yml'
   api/v1/admin/birds:
     $ref: './paths/bird-card-post.yml'
-  api/v1/birds/cards/{name_latin}:
-    $ref: './paths/bird-card-get.yml'
-  api/v1/birds/{id}:
-    $ref: './paths/bird-entry.yml'

@@ -21,9 +21,9 @@ public class BirdCardDto {
 
     private String nameMain;
 
-
+    /** A list of etymologies. Must have the same size as {@link #altNames}. */
     private List<String> etymologies = new ArrayList<>();
-
+    /** A list of alternative names, grouped by etymologies. Defaults to an empty array. */
     private List<List<String>> altNames = new ArrayList<>();
 
     /** Photos of the bird from the Internet. */

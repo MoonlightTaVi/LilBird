@@ -1,0 +1,22 @@
+type: object
+description: The core information about a bird.
+properties:
+    nameNormal:
+      type: string
+      pattern: '[0-9a-z+]+'
+      example: bubo+scandiacus
+      description: >
+        Same as nameLatin, but normalized for convenience.
+        Serves as an ID of the entity.
+    nameLatin:
+      type: string
+      pattern: '[0-9a-zA-Z\\-\s]+'
+      example: Bubo scandiacus
+      description: The base latin name (unique).
+    nameMain:
+      type: string
+      example: Snowy owl
+      description: (Optional) The most common name.
+required:
+  - nameLatin
+  - nameNormal

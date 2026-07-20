@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,18 +22,18 @@ import lombok.NoArgsConstructor;
  * The entity for the table of alternative bird names.
  */
 @Data @NoArgsConstructor
-@Entity(name = "NameGroup") @Table(name = "BirdNames")
+@Entity(name = "NameGroup")
+@Table(name = "BirdNames")
 public class NameGroupEntity implements NameGroup {
 
-    @Min(value = 1, message = "The ID is always > 0")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** The reference to the original bird entry. */
     @ManyToOne
     @JoinColumn(
-        name = "entry_id", 
-        referencedColumnName = "id", 
+        name = "ref_name_normal",               // This column
+        referencedColumnName = "name_normal",   // Referenced column
         nullable = false
     )
     @JsonIgnore

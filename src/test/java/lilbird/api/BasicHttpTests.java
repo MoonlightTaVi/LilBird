@@ -32,11 +32,12 @@ import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 @ActiveProfiles("test")
 public class BasicHttpTests {
 
-    /**
-     * The first posted object must be assigned this ID.
-     */
-    private final static int id = 1;
+    /** Some latin name to use. */
+    private final static String existentId = "Bubo scandiacus";
+    /** Some placeholder latin name to not be used. */
+    private final static String unexistentId = "Corvus corax";
 
+    /** The request body. */
     private static BirdCardDto cardDto;
 
 
@@ -51,16 +52,17 @@ public class BasicHttpTests {
     @BeforeAll
     public static void setup() {
         cardDto = new BirdCardDto();
-        cardDto.setNameLatin("Raven");
-        cardDto.setNameMain("Draven");
+        cardDto.setNameLatin(existentId);
+        cardDto.setNameMain("Polar Owl");
 
         final NameGroupEntity altNameGroup = new NameGroupEntity();
-        altNameGroup.setNames(List.of("RAVEN"));
-        altNameGroup.setEtymology("Same, but CAPS.");
+        altNameGroup.setNames(List.of("Owl"));
+        altNameGroup.setEtymology("Just owl.");
         cardDto.addAltName(altNameGroup);
     }
 
 
+    /** Posts a new bird before each test. */
     @BeforeEach
     public void postBird() {
         rest.post()
@@ -71,6 +73,7 @@ public class BasicHttpTests {
     }
 
 
+    /** Must always respond HTTP 200. */
     @Test
     @DirtiesContext
     public void setupSuccess() {
@@ -80,21 +83,22 @@ public class BasicHttpTests {
             .expectStatus().is2xxSuccessful();
     }
 
+    /** This card should NOT exist. */
     @Test
     @DirtiesContext
     public void getNotFound() {
-        final int unexistentId = id + 1;
         rest.get()
-            .uri("/api/v1/birds/{id}", unexistentId)
+            .uri("/api/v1/birds/{title}", unexistentId)
             .exchange()
             .expectStatus().isNotFound();
     }
 
+    /** This card should exist. */
     @Test
     @DirtiesContext
-    public void titleSearchSuccess() {
+    public void getSuccessful() {
         rest.get()
-            .uri("/api/v1/birds/cards/{title}", cardDto.getNameLatin())
+            .uri("/api/v1/birds/{title}", cardDto.getNameLatin())
             .exchange()
             .expectStatus().is2xxSuccessful()
             .expectBody(BirdCardDto.class)

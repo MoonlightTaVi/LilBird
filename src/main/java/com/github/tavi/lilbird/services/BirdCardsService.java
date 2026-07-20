@@ -11,6 +11,7 @@ import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 import com.github.tavi.lilbird.repositories.BirdsRepo;
 import com.github.tavi.lilbird.repositories.NamesRepo;
+import com.github.tavi.lilbird.util.NameUtils;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -21,7 +22,6 @@ import jakarta.validation.constraints.NotNull;
 @Service
 @Validated
 public class BirdCardsService {
-
 
     @Autowired
     private BirdsRepo entriesRepo;
@@ -47,14 +47,16 @@ public class BirdCardsService {
     /* ==== READ ==== */
 
     /** Checks if a {@link BirdEntity} with this id exists. */
-    public boolean entryExists(final long id) {
-        return entriesRepo.existsById(id);
+    public boolean entryExists(String latinName) {
+        latinName = NameUtils.normalize(latinName);
+        return entriesRepo.existsById(latinName);
     }
 
     /** Finds the entry for the bird by its unique ID. */
-    public BirdEntity getEntryById(final long id) throws NotFoundException {
+    public BirdEntity getEntryById(String latinName) throws NotFoundException {
+        latinName = NameUtils.normalize(latinName);
         final BirdEntity entry = entriesRepo
-                .findById(id)
+                .findById(latinName)
                 .orElseThrow(
                     () -> new NotFoundException(
                         "The entry by this ID does not exist"
@@ -64,9 +66,10 @@ public class BirdCardsService {
     }
 
     /** Finds the entry for the bird by its unique latin name ID. */
-    public BirdEntity getEntryByName(final String latinName) throws NotFoundException {
+    public BirdEntity getEntryByName(String latinName) throws NotFoundException {
+        latinName = NameUtils.normalize(latinName);
         final BirdEntity entry = entriesRepo
-                .findByTitle(latinName)
+                .findById(latinName)
                 .orElseThrow(
                     () -> new NotFoundException(
                         "The entry by this title ID does not exist"
@@ -81,14 +84,15 @@ public class BirdCardsService {
     }
 
     /** Returns the list of synonymous names for the bird entry. */
-    public List<NameGroupEntity> getNamesOf(final long entryId) {
-        final List<NameGroupEntity> synonyms = namesRepo.findByReference(entryId);
+    public List<NameGroupEntity> getNamesOf(String latinName) {
+        latinName = NameUtils.normalize(latinName);
+        final List<NameGroupEntity> synonyms = namesRepo.findByReference(latinName);
         return synonyms;
     }
 
     /** Same as {@link #getNamesOf(long)}, but accepts the entry itself. */
-    public List<NameGroupEntity> getNamesOf(@NotNull final BirdEntity entry) {
-        return getNamesOf(entry.getId());
+    public List<NameGroupEntity> getNamesOf(@NotNull BirdEntity entry) {
+        return getNamesOf(entry.getNameNormal());
     }
 
     // ==== DROP ====

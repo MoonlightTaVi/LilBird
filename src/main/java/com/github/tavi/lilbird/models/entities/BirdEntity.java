@@ -1,18 +1,11 @@
 package com.github.tavi.lilbird.models.entities;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.tavi.lilbird.models.Bird;
 import com.github.tavi.lilbird.util.NameUtils;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,26 +18,19 @@ import lombok.NoArgsConstructor;
  * Even if the database contains any other kind of data (not birds),
  * it is convenient to call each unique entry "a bird".
  */
-@JsonInclude(Include.NON_NULL)
 @Data @NoArgsConstructor
-@Entity(name = "Bird") @Table(name = "Birds")
-public class BirdEntity implements Bird {
-
-    @Min(value = 1, message = "The ID is always > 0")
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    /** Latin name. */
-    @Column(nullable = false)
-    private String nameLatin;
+@Entity(name = "Bird")
+@Table(name = "Birds")
+public class BirdEntity {
 
     /** Normalized latin name. */
-    @Schema(
-        description = "The normalized title",
-        example = "bubo+scandiacus"
-    )
-    @Column(name = "name_normal", unique = true,  nullable = false)
+    @Id
+    @Column(name = "name_normal")
     private String nameNormal;
+
+    /** Latin name. */
+    @Column(name = "name_latin", nullable = false)
+    private String nameLatin;
 
     /** Primary common name. */
     @Column(name = "name_main")

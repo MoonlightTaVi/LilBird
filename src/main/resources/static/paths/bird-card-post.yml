@@ -8,7 +8,7 @@ post:
           schema:
             $ref: '../schemas/bird-card.yml'
     responses:
-      "200":
+      "201":
         description: Created successfully.
       "400":
         description: Some of the parameters are invalid (see the schema).

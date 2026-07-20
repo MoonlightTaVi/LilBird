@@ -12,10 +12,12 @@ import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 /**
  * The repository of synonyms for bird names.
  */
-public interface NamesRepo extends JpaRepository<NameGroupEntity, Long> {
+public interface NamesRepo extends JpaRepository<NameGroupEntity,Long> {
+
+    // Hibernate queries use attribute names, not column names
 
     /** Filters all synonyms that correspond to the given bird and returns them. */
-    @Query("SELECT n FROM NameGroup n WHERE n.entry.id = :entry_id")
-    public List<NameGroupEntity> findByReference(@Param("entry_id") Long entryId);
+    @Query("SELECT n FROM NameGroup n WHERE n.entry.nameNormal = :nameNormal")
+    public List<NameGroupEntity> findByReference(@Param("nameNormal") String nameNormal);
     
 }
