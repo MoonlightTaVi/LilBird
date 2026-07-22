@@ -2,8 +2,6 @@ package lilbird.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,11 +51,11 @@ public class BasicHttpTests {
     public static void setup() {
         cardDto = new BirdCardDto();
         cardDto.setNameLatin(existentId);
-        cardDto.setNameMain("Polar Owl");
+        cardDto.setNameMain("Owl");
 
         final NameGroupEntity altNameGroup = new NameGroupEntity();
-        altNameGroup.setNames(List.of("Owl"));
-        altNameGroup.setEtymology("Just owl.");
+        altNameGroup.setNames(new String[] {"Polar Owl", "Snowy Owl"});
+        altNameGroup.setEtymology("Etymology of the owl.");
         cardDto.addAltName(altNameGroup);
     }
 
@@ -72,6 +70,18 @@ public class BasicHttpTests {
             .expectStatus().is2xxSuccessful();
     }
 
+
+    @Test
+    @DirtiesContext
+    public void birdStatusCreated() {
+        BirdCardDto dto = new BirdCardDto();
+        dto.setNameLatin(unexistentId);
+        rest.post()
+            .uri("/api/v1/admin/birds")
+            .body(dto)
+            .exchange()
+            .expectStatus().isCreated();
+    }
 
     /** Must always respond HTTP 200. */
     @Test

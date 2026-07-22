@@ -1,5 +1,7 @@
 package com.github.tavi.lilbird.util;
 
+import java.util.Arrays;
+import java.util.List;
 
 /** Utility methods for bird names. */
 public class NameUtils {
@@ -20,6 +22,22 @@ public class NameUtils {
     public static String normalize(final String title) {
         return title.toLowerCase()
                 .replace("\s", "+");
+    }
+
+    /** 
+     * A helper method to compare two lists of String arrays, 
+     * for the name groups.
+     * 
+     * @return {@code true} If both lists are equal, {@code false} otherwise.
+     */
+    public static boolean equals(List<String[]> groupA, List<String[]> groupB) {
+        if (groupA.size() != groupB.size())
+            return false;
+        for (int i = 0; i < groupA.size(); i++) {
+            if (!Arrays.equals(groupA.get(i), groupB.get(i)))
+                return false;
+        }
+        return true;
     }
 
 }

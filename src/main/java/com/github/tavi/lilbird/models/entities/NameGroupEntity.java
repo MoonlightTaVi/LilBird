@@ -1,9 +1,6 @@
 package com.github.tavi.lilbird.models.entities;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.tavi.lilbird.models.NameGroup;
 import com.github.tavi.lilbird.util.NameUtils;
 
 import jakarta.persistence.Column;
@@ -14,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 @Entity(name = "NameGroup")
 @Table(name = "BirdNames")
-public class NameGroupEntity implements NameGroup {
+public class NameGroupEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,28 +39,28 @@ public class NameGroupEntity implements NameGroup {
 
 
     /** Ethymology of this name group. */
-    @Column(nullable = false)
+    @NotBlank
     private String etymology;
 
     /** 
      * Alternative names, separated by a delimiter. 
      * @see NameUtils.NAME_DELIMITER
     */
-    @JsonIgnore
+    @JsonIgnore @NotBlank
+    @Column(name = "names")
     private String namesStr;
 
 
-    @Override
-    public void setNames(final List<String> names) {
+    /** Sets the names for this group. Overrides the old value. */
+    public void setNames(String... names) {
         namesStr = String.join(NameUtils.NAME_DELIMITER, names);
     }
 
-    /** @apiNote Returns an unmodifiable list of alternative names group. */
-    @Override
-    public List<String> getNames() {
+    /** Returns the array of names for this group. */
+    public String[] getNames() {
         if (namesStr == null)
-            return List.of();
-        return List.of(namesStr.split(NameUtils.NAME_DELIMITER));
+            return new String[0];
+        return namesStr.split(NameUtils.NAME_DELIMITER);
     }
     
 }
