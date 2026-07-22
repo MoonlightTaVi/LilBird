@@ -2,11 +2,11 @@ package com.github.tavi.lilbird.api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
@@ -14,9 +14,6 @@ import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.models.entities.NameGroupEntity;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 
@@ -25,27 +22,22 @@ import jakarta.validation.Valid;
  * Allows managing the information about bird names
  * and other details <b>by administators</b>.
  */
-@RestController
-@RequestMapping(
-    value = "api/v1/admin",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
 @Validated
+@RestController
+@RequestMapping("api/v1/admin")
 public class BirdManagementController {
 
     @Autowired
     private BirdCardsService service;
 
 
-    @Operation(summary = "Create a new entry for a bird.")
-    @ApiResponses({
-        @ApiResponse(
-            description = "Returns the new bird entry unique ID",
-            responseCode = "200"
-        )
-    })
+    /** 
+     * Creates a new {@link BirdEntity} and the {@link NameGroupEntity} objects
+     * that are associated with it.
+     */
     @PostMapping("/birds")
-    public HttpStatus newEntry(@RequestBody @Valid BirdCardDto card) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void newBird(@RequestBody @Valid BirdCardDto card) {
         BirdEntity bird = new BirdEntity();
         bird.setNameLatin(card.getNameLatin());
         bird.setNameMain(card.getNameMain());
@@ -57,8 +49,6 @@ public class BirdManagementController {
             nameGroup.setEntry(bird);
             service.save(nameGroup);
         }
-
-        return HttpStatus.CREATED;
     }
 
 }

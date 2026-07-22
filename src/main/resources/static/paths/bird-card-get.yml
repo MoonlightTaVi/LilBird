@@ -4,6 +4,7 @@ get:
     parameters:
       - name: name_latin
         in: path
+        required: true
         description: The normalized latin name of the bird.
         schema:
           type: string
