@@ -19,6 +19,9 @@ import com.github.tavi.lilbird.App;
 import com.github.tavi.lilbird.models.entities.Taxon;
 
 
+/**
+ * Tests for taxonomy services.
+ */
 @SpringBootTest(classes = App.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureRestTestClient
@@ -27,16 +30,18 @@ public class BasicTaxonsTests {
 
     static final String publicApi = "/api/v1/taxons";
     static final String privateApi = "/api/v1/admin/taxons";
-
-    static final String taxonName = "Corvidae";
+    
+    static final String taxonName = "family";
+    static final String latinName = "Corvidae";
+    static final int speciesLength = 135;
     static Taxon taxon;
 
     @BeforeAll
     public static void setup() {
         taxon = new Taxon();
-        taxon.setTaxonName("family");
-        taxon.setLatinName("Corvidae");
-        taxon.setSpeciesLength(135);
+        taxon.setTaxonName(taxonName);
+        taxon.setLatinName(latinName);
+        taxon.setSpeciesLength(speciesLength);
     }
 
 
@@ -77,7 +82,29 @@ public class BasicTaxonsTests {
     @Order(4)
     public void getByLengthSuccess() {
         client.get()
-            .uri(publicApi + "/by-species/{length}", taxon.getSpeciesLength())
+            .uri(
+                publicApi + "/filter?taxon={taxon}&species={species}", 
+                taxon.getTaxonName(), 
+                taxon.getSpeciesLength()
+            )
+            .exchange()
+            .expectStatus().is2xxSuccessful()
+            .expectBody(List.class)
+            .value(l -> assertEquals(1, l.size()))
+            .value(l -> l.contains(taxon));
+    }
+
+    @Test
+    @Order(4)
+    public void getByLengthRangeSuccess() {
+        int offset = 5;
+        client.get()
+            .uri(
+                publicApi + "/filter?taxon={taxon}&species={species}&range={range}", 
+                taxon.getTaxonName(), 
+                taxon.getSpeciesLength(),
+                offset * 2
+            )
             .exchange()
             .expectStatus().is2xxSuccessful()
             .expectBody(List.class)
@@ -89,7 +116,11 @@ public class BasicTaxonsTests {
     @Order(4)
     public void getByLengthNotFound() {
         client.get()
-            .uri(publicApi + "/by-species/{length}", 0)
+            .uri(
+                publicApi + "/filter?taxon={taxon}&species={species}", 
+                taxon.getTaxonName(), 
+                0
+            )
             .exchange()
             .expectStatus().is2xxSuccessful()
             .expectBody(List.class)

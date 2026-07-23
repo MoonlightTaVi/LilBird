@@ -16,8 +16,12 @@ public interface TaxonomyRepo extends JpaRepository<Taxon,String> {
     @Query("SELECT t FROM Taxon t WHERE t.speciesLength = :length")
     List<Taxon> filterBySpecies(@Param("length") int length);
 
-    /** Same as {@link #filterBySpecies(int)}, but for range.. */
+    /** Same as {@link #filterBySpecies(int)}, but for range. */
     @Query("SELECT t FROM Taxon t WHERE t.speciesLength >= :min AND t.speciesLength <= :max")
     List<Taxon> filterBySpecies(@Param("min") int min, @Param("max") int max);
+
+    /** Returns the list of taxons with the given type name. */
+    @Query("SELECT t FROM Taxon t WHERE t.taxonName = :type")
+    List<Taxon> filterByType(@Param("type") String taxonName);
 
 }
