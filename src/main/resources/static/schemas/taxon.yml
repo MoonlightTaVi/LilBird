@@ -1,0 +1,24 @@
+type: object
+properties:
+  taxon_name:
+    type: string
+    description: The type of taxon in the taxonomy classification.
+    example: family
+  latin_name:
+    type: string
+    pattern: '[0-9a-zA-Z\\-\s]+'
+    description: The main latin name of the taxon.
+    example: Corvidae
+  name:
+    type: string
+    description: The most common name of the taxon.
+    example: Corvids
+  species_length:
+    type: integer
+    format: int32
+    description: Total number of species in this taxon and sub-taxons (if any).
+    example: 135
+required:
+  - taxon_name
+  - latin_name
+  - species_length

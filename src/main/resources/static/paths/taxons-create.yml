@@ -1,0 +1,16 @@
+post:
+  summary: Creates a new taxon entry.
+  requestBody:
+    required: true
+    summary: The JSON object of the taxon.
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/taxon.yml
+  responses:
+      "201":
+        description: Created successfully.
+      "400":
+        description: Some of the parameters are invalid (see the schema).
+      "423":
+        description: When trying to update an existing entry which is currently locked.

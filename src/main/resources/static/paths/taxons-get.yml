@@ -1,0 +1,13 @@
+get:
+  summary: Get the taxon by its name.
+  parameters:
+    - name: latin_name
+      in: path
+      required: true
+      description: The main latin name of the taxon.
+      schema:
+        type: string
+        example: corvidae
+  responses:
+    "200":
+      description: Ok.

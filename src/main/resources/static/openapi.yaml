@@ -11,3 +11,9 @@ paths:
     $ref: './paths/bird-card-get.yml'
   api/v1/admin/birds:
     $ref: './paths/bird-card-post.yml'
+  api/v1/taxons:
+    $ref: './paths/taxons-create.yml'
+  api/v1/taxons/{latin_name}:
+    $ref: './paths/taxons-get.yml'
+  api/v1/taxons/filter:
+    $ref: './paths/taxons-filter.yml'
