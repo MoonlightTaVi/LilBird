@@ -115,4 +115,16 @@ public class BasicHttpTests {
             .value(card -> assertEquals(cardDto, card));
     }
 
+    @Test
+    @DirtiesContext
+    public void nameValidation() {
+        BirdCardDto invalidCard = new BirdCardDto();
+        invalidCard.setNameLatin("Hello, World!");
+        rest.post()
+            .uri("/api/v1/admin/birds")
+            .body(invalidCard)
+            .exchange()
+            .expectStatus().isBadRequest();
+    }
+
 }

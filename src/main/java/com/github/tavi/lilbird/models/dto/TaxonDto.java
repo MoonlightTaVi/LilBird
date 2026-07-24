@@ -1,6 +1,7 @@
 package com.github.tavi.lilbird.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.tavi.lilbird.annotations.IsLatinWord;
 import com.github.tavi.lilbird.models.entities.Taxon;
 
 import jakarta.validation.constraints.Min;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class TaxonDto {
 
     /** The name that identifies this taxon type (e.g. "family", "genus", etc.) */
+    @IsLatinWord
     @JsonProperty("taxon_name")
     String taxonName;
 

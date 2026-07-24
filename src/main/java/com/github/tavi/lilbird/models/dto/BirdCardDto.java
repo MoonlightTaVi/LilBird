@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.tavi.lilbird.annotations.IsLatinWord;
 import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.util.NameUtils;
 
@@ -21,6 +22,7 @@ import lombok.ToString;
 public class BirdCardDto {
     
     /** The main latin name of the bird. */
+    @IsLatinWord
     @JsonProperty("name_latin")
     private String nameLatin;
     /** The most common name of the bird. */

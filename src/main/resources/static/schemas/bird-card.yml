@@ -1,25 +1,25 @@
 type: object
 properties:
   name_latin:
-    type: string
-    pattern: '[0-9a-zA-Z\\-\s]+'
     description: The base latin name of the bird.
+    type: string
+    pattern: (?=.*[a-zA-Z])[0-9a-zA-Z\s-]+
     example: Bubo scandiacus
   name_main:
-    type: string
     description: The main common name of the bird.
+    type: string
     example: Snowy owl
   etymologies:
-    type: array
     description: A list of etymologies for the alternative names.
+    type: array
     items:
       type: string
     example:
       - From Middle English "oule", related to the sound of the owl's hoot.
       - They inhabit polar regions.
   alt_names:
-    type: array
     description: Groups of names for each etymology.
+    type: array
     items:
       type: array
       items:
@@ -28,8 +28,8 @@ properties:
       - ["Owl"]
       - ["Snowy owl", "Polar owl"]
   photo_urls:
-    type: array
     description: A list of URLs to photos of this bird.
+    type: array
     items:
       type: string
       format: uri
