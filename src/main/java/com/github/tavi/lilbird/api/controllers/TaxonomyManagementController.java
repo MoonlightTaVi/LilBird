@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.tavi.lilbird.models.dto.TaxonDto;
 import com.github.tavi.lilbird.models.entities.Taxon;
 import com.github.tavi.lilbird.services.TaxonomyService;
 
@@ -27,9 +28,15 @@ public class TaxonomyManagementController {
     @Autowired
     TaxonomyService service;
 
+    /** Create a new {@link Taxon} database entry. */
     @PostMapping("/taxons")
     @ResponseStatus(HttpStatus.CREATED)
-    public void postTaxon(@RequestBody @Valid Taxon taxon) {
+    public void postTaxon(@RequestBody @Valid TaxonDto dto) {
+        Taxon taxon = new Taxon();
+        taxon.setTaxonName(dto.getTaxonName());
+        taxon.setLatinName(dto.getLatinName());
+        taxon.setCommonName(dto.getCommonName());
+        taxon.setSpeciesLength(dto.getSpeciesLength());
         service.save(taxon);
     }
 

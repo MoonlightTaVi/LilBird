@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
+import com.github.tavi.lilbird.models.dto.TaxonDto;
 import com.github.tavi.lilbird.models.entities.Taxon;
 
 
@@ -34,11 +35,11 @@ public class BasicTaxonsTests {
     static final String taxonName = "family";
     static final String latinName = "Corvidae";
     static final int speciesLength = 135;
-    static Taxon taxon;
+    static TaxonDto taxon;
 
     @BeforeAll
     public static void setup() {
-        taxon = new Taxon();
+        taxon = new TaxonDto();
         taxon.setTaxonName(taxonName);
         taxon.setLatinName(latinName);
         taxon.setSpeciesLength(speciesLength);

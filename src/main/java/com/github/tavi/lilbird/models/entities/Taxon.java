@@ -1,5 +1,7 @@
 package com.github.tavi.lilbird.models.entities;
 
+import com.github.tavi.lilbird.util.NameUtils;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -30,8 +32,12 @@ public class Taxon {
     @Column(name = "taxon_name")
     String taxonName;
 
-    /** The main latin name of the taxon. */
+    /** Same as {@link #latinName}, but normalized. Do not change it manually. */
     @Id
+    @Column(name = "normal_name")
+    String normalName;
+
+    /** The main latin name of the taxon. */
     @Column(name = "latin_name")
     String latinName;
 
@@ -44,5 +50,11 @@ public class Taxon {
     @Column(name = "species_length")
     int speciesLength;
 
+
+    /** Sets both the latin and the normalized names of the entry. */
+    public void setLatinName(String latinName) {
+        this.latinName = latinName;
+        normalName = NameUtils.normalize(latinName);
+    }
 
 }

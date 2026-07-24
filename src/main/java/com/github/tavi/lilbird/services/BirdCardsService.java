@@ -54,12 +54,11 @@ public class BirdCardsService {
 
     /** Finds the entry for the bird by its unique ID. */
     public Bird getEntryById(String latinName) throws NotFoundException {
-        latinName = NameUtils.normalize(latinName);
         final Bird entry = entriesRepo
-                .findById(latinName)
+                .findById(NameUtils.normalize(latinName))
                 .orElseThrow(
                     () -> new NotFoundException(
-                        "The entry by this ID does not exist"
+                        "The bird entry does not exist: " + latinName
                     )
                 );
         return entry;
