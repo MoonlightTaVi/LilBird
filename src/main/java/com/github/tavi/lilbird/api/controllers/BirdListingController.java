@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
-import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.github.tavi.lilbird.models.entities.Bird;
+import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 
@@ -24,11 +24,11 @@ public class BirdListingController {
     private BirdCardsService service;
 
 
-    /** The list of all {@link BirdEntity} objects. */
+    /** The list of all {@link Bird} objects. */
     @GetMapping("")
-    public ResponseEntity<List<BirdEntity>> getBirds() {
+    public ResponseEntity<List<Bird>> getBirds() {
         // TODO Might be expensive to send all of the DB rows; add paging?
-        final List<BirdEntity> birds = service.getAllBirds();
+        final List<Bird> birds = service.getAllBirds();
         return ResponseEntity.ok(birds);
     }
     
@@ -40,12 +40,12 @@ public class BirdListingController {
     {
         final BirdCardDto card = new BirdCardDto();
 
-        final BirdEntity bird = service.getEntryByName(nameLatin);
+        final Bird bird = service.getEntryByName(nameLatin);
         card.setNameLatin(bird.getNameLatin());
         card.setNameMain(bird.getNameMain());
 
-        final List<NameGroupEntity> nameGroups = service.getNamesOf(bird);
-        for (final NameGroupEntity nameGroup : nameGroups) {
+        final List<NameGroup> nameGroups = service.getNamesOf(bird);
+        for (final NameGroup nameGroup : nameGroups) {
             card.addAltName(nameGroup);
         }
 

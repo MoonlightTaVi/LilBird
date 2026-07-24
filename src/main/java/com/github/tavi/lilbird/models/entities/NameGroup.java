@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 @Entity(name = "NameGroup")
 @Table(name = "BirdNames")
-public class NameGroupEntity {
+public class NameGroup {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +35,7 @@ public class NameGroupEntity {
         nullable = false
     )
     @JsonIgnore
-    private BirdEntity entry;
+    private Bird entry;
 
 
     /** Ethymology of this name group. */

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.util.NameUtils;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,30 +15,31 @@ import lombok.ToString;
 
 
 /** A bird card contains all the info on the bird. */
-@Schema(
-    description = "A card that accumulates all the information about a bird"
-)
 @Getter @Setter
 @ToString
 @NoArgsConstructor
 public class BirdCardDto {
     
     /** The main latin name of the bird. */
+    @JsonProperty("name_latin")
     private String nameLatin;
     /** The most common name of the bird. */
+    @JsonProperty("name_main")
     private String nameMain = null;
 
     /** A list of etymologies. Must have the same size as {@link #altNames}. */
     private List<String> etymologies = new ArrayList<>();
     /** A list of alternative names, grouped by etymologies. Defaults to an empty array. */
+    @JsonProperty("alt_names")
     private List<String[]> altNames = new ArrayList<>();
 
     /** Photos of the bird from the Internet. */
+    @JsonProperty("photo_urls")
     private List<String> photoUrls = new ArrayList<>();
     
 
     /** Prepares a name group entity for the date transfer.  */
-    public void addAltName(final NameGroupEntity nameGroup) {
+    public void addAltName(final NameGroup nameGroup) {
         etymologies.add(nameGroup.getEtymology());
         altNames.add(nameGroup.getNames());
     }
@@ -48,11 +49,11 @@ public class BirdCardDto {
      * 
      * @param index     Must be less than the {@link #nameCount()}.
      * 
-     * @return  The {@link NameGroupEntity} by this index.
+     * @return  The {@link NameGroup} by this index.
      * @throws IndexOutOfBoundsException
      */
-    public NameGroupEntity getNameGroup(final int index) {
-        final NameGroupEntity nameGroup = new NameGroupEntity();
+    public NameGroup getNameGroup(final int index) {
+        final NameGroup nameGroup = new NameGroup();
         nameGroup.setEtymology(etymologies.get(index));
         nameGroup.setNames(altNames.get(index));
         return nameGroup;

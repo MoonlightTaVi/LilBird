@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 @Entity(name = "Bird")
 @Table(name = "Birds")
-public class BirdEntity {
+public class Bird {
 
     /** Normalized latin name. */
     @Id

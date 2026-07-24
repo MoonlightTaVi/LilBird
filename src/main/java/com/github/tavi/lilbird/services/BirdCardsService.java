@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.exception.NotFoundException;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
-import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.github.tavi.lilbird.models.entities.Bird;
+import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.repositories.BirdsRepo;
 import com.github.tavi.lilbird.repositories.NamesRepo;
 import com.github.tavi.lilbird.util.NameUtils;
@@ -32,13 +32,13 @@ public class BirdCardsService {
     /* ==== CREATE or UPDATE ==== */
 
     /** Creates a new database entry OR updates the existent one. */
-    public BirdEntity save(@NotNull BirdEntity bird) {
+    public Bird save(@NotNull Bird bird) {
         bird = entriesRepo.save(bird);
         return bird;
     }
 
     /** Creates OR updates a database entity for an alternative bird name. */
-    public NameGroupEntity save(@NotNull NameGroupEntity name) {
+    public NameGroup save(@NotNull NameGroup name) {
         name = namesRepo.save(name);
         return name;
     }
@@ -46,16 +46,16 @@ public class BirdCardsService {
 
     /* ==== READ ==== */
 
-    /** Checks if a {@link BirdEntity} with this id exists. */
+    /** Checks if a {@link Bird} with this id exists. */
     public boolean entryExists(String latinName) {
         latinName = NameUtils.normalize(latinName);
         return entriesRepo.existsById(latinName);
     }
 
     /** Finds the entry for the bird by its unique ID. */
-    public BirdEntity getEntryById(String latinName) throws NotFoundException {
+    public Bird getEntryById(String latinName) throws NotFoundException {
         latinName = NameUtils.normalize(latinName);
-        final BirdEntity entry = entriesRepo
+        final Bird entry = entriesRepo
                 .findById(latinName)
                 .orElseThrow(
                     () -> new NotFoundException(
@@ -66,9 +66,9 @@ public class BirdCardsService {
     }
 
     /** Finds the entry for the bird by its unique latin name ID. */
-    public BirdEntity getEntryByName(String latinName) throws NotFoundException {
+    public Bird getEntryByName(String latinName) throws NotFoundException {
         latinName = NameUtils.normalize(latinName);
-        final BirdEntity entry = entriesRepo
+        final Bird entry = entriesRepo
                 .findById(latinName)
                 .orElseThrow(
                     () -> new NotFoundException(
@@ -79,19 +79,19 @@ public class BirdCardsService {
     }
 
     /** Returns the list of all bird entries in the database. */
-    public List<BirdEntity> getAllBirds() {
+    public List<Bird> getAllBirds() {
         return entriesRepo.findAll();
     }
 
     /** Returns the list of synonymous names for the bird entry. */
-    public List<NameGroupEntity> getNamesOf(String latinName) {
+    public List<NameGroup> getNamesOf(String latinName) {
         latinName = NameUtils.normalize(latinName);
-        final List<NameGroupEntity> synonyms = namesRepo.findByReference(latinName);
+        final List<NameGroup> synonyms = namesRepo.findByReference(latinName);
         return synonyms;
     }
 
     /** Same as {@link #getNamesOf(long)}, but accepts the entry itself. */
-    public List<NameGroupEntity> getNamesOf(@NotNull BirdEntity entry) {
+    public List<NameGroup> getNamesOf(@NotNull Bird entry) {
         return getNamesOf(entry.getNameNormal());
     }
 

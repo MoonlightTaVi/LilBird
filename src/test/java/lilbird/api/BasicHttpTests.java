@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.github.tavi.lilbird.models.entities.NameGroup;
 
 
 /**
@@ -53,7 +53,7 @@ public class BasicHttpTests {
         cardDto.setNameLatin(existentId);
         cardDto.setNameMain("Owl");
 
-        final NameGroupEntity altNameGroup = new NameGroupEntity();
+        final NameGroup altNameGroup = new NameGroup();
         altNameGroup.setNames(new String[] {"Polar Owl", "Snowy Owl"});
         altNameGroup.setEtymology("Etymology of the owl.");
         cardDto.addAltName(altNameGroup);

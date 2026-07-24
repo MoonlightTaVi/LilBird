@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
-import com.github.tavi.lilbird.models.entities.NameGroupEntity;
+import com.github.tavi.lilbird.models.entities.Bird;
+import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 import jakarta.validation.Valid;
@@ -32,20 +32,20 @@ public class BirdManagementController {
 
 
     /** 
-     * Creates a new {@link BirdEntity} and the {@link NameGroupEntity} objects
+     * Creates a new {@link Bird} and the {@link NameGroup} objects
      * that are associated with it.
      */
     @PostMapping("/birds")
     @ResponseStatus(HttpStatus.CREATED)
     public void newBird(@RequestBody @Valid BirdCardDto card) {
-        BirdEntity bird = new BirdEntity();
+        Bird bird = new Bird();
         bird.setNameLatin(card.getNameLatin());
         bird.setNameMain(card.getNameMain());
 
         // After the ID field is set:
         bird = service.save(bird);
         for (int i = 0; i < card.nameCount(); i++) {
-            final NameGroupEntity nameGroup = card.getNameGroup(i);
+            final NameGroup nameGroup = card.getNameGroup(i);
             nameGroup.setEntry(bird);
             service.save(nameGroup);
         }
