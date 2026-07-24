@@ -37,4 +37,4 @@ properties:
       - https://url1.com/photo.png
       - https://url2.com/photo.jpeg
 required:
-  - nameLatin
+  - name_latin

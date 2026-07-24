@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
 import com.github.tavi.lilbird.models.dto.TaxonDto;
-import com.github.tavi.lilbird.models.entities.Taxon;
 
 
 /**
@@ -75,7 +74,7 @@ public class BasicTaxonsTests {
             .uri(publicApi + "/{name}", taxon.getLatinName())
             .exchange()
             .expectStatus().is2xxSuccessful()
-            .expectBody(Taxon.class)
+            .expectBody(TaxonDto.class)
             .value(body -> body.equals(taxon));
     }
 
