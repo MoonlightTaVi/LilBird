@@ -1,12 +1,10 @@
 get:
-    summary: Returns a simple list of all bird entries.
-    description: The list contains only ID and the main latin & common names.
+    summary: Returns every bird.
+    description: Each item contains the latin name and the normalized id. Names live on the bird card.
     responses:
       "200":
-        description: A JSON array of all bird objects.
+        description: A JSON array of bird rows.
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '../schemas/birds-list.yml'
+              $ref: '../schemas/birds-list.yml'

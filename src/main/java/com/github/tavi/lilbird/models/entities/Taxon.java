@@ -7,8 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 /**
@@ -21,40 +23,45 @@ import lombok.NoArgsConstructor;
  * <p> - Species
  * <p> and some others.
  * 
- * @see #taxonName
+ * @see #taxonType
  */
 @Entity(name = "Taxon")
 @Table(name = "Taxons")
 @Data @NoArgsConstructor
 public class Taxon {
 
+    // TODO Use enums
     /** The name that identifies this taxon type (e.g. "family", "genus", etc.) */
-    @Column(name = "taxon_name")
-    String taxonName;
+    @Column(name = "taxon_type")
+    String taxonType;
 
-    /** Same as {@link #latinName}, but normalized. Do not change it manually. */
+    /** 
+     * Same as {@link #nameLatin}, but normalized. 
+     * Derived in {@link #setNameLatin(String)}. 
+     */
     @Id
-    @Column(name = "normal_name")
-    String normalName;
+    @Setter(AccessLevel.NONE)
+    @Column(name = "name_normal")
+    String nameNormal;
 
     /** The main latin name of the taxon. */
-    @Column(name = "latin_name")
-    String latinName;
+    @Column(name = "name_latin")
+    String nameLatin;
 
-    /** The most common name of this taxon. */
-    @Column(name = "common_name")
-    String commonName;
+    /** The most common localized name of this taxon. May be {@code null}. */
+    @Column(name = "name_primary")
+    String namePrimary;
 
     /** The total number of species in this taxon. */
     @Min(1)
-    @Column(name = "species_length")
-    int speciesLength;
+    @Column(name = "species_count")
+    int speciesCount;
 
 
     /** Sets both the latin and the normalized names of the entry. */
-    public void setLatinName(String latinName) {
-        this.latinName = latinName;
-        normalName = NameUtils.normalize(latinName);
+    public void setNameLatin(String latinName) {
+        this.nameLatin = latinName;
+        nameNormal = NameUtils.normalize(latinName);
     }
 
 }

@@ -1,14 +1,17 @@
 get:
-    summary: Returns a filled card with the information about the bird.
-    description: Each card contains most of the important information for the bird.
+    summary: Returns the card for one bird.
+    description: >
+      The card contains the bird's latin name and the names stored for it.
+      The path value is normalized before the lookup, so both the displayed
+      latin name and the normalized id are accepted.
     parameters:
       - name: name_latin
         in: path
         required: true
-        description: The normalized latin name of the bird.
+        description: The bird's latin name, or its normalized id.
         schema:
           type: string
-          example: bubo+scandiacus
+          example: Bubo scandiacus
     responses:
       "200":
         description: OK
@@ -17,4 +20,4 @@ get:
             schema:
               $ref: '../schemas/bird-card.yml'
       "404":
-        description: No such entry
+        description: No such bird

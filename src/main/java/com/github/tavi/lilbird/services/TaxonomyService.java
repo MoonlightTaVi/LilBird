@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.exception.NotFoundException;
+import com.github.tavi.lilbird.models.dto.TaxonDto;
 import com.github.tavi.lilbird.models.entities.Taxon;
 import com.github.tavi.lilbird.repositories.TaxonomyRepo;
 import com.github.tavi.lilbird.util.NameUtils;
@@ -33,6 +34,16 @@ public class TaxonomyService {
     public boolean exists(String latinName) {
         latinName = NameUtils.normalize(latinName);
         return repository.existsById(latinName);
+    }
+
+    /** Copies the fields the public API exposes for a taxon. */
+    public TaxonDto toDto(@NotNull Taxon taxon) {
+        TaxonDto dto = new TaxonDto();
+        dto.setTaxonType(taxon.getTaxonType());
+        dto.setNameLatin(taxon.getNameLatin());
+        dto.setNamePrimary(taxon.getNamePrimary());
+        dto.setSpeciesCount(taxon.getSpeciesCount());
+        return dto;
     }
 
     /** Returns the taxon with the given name if it exists.

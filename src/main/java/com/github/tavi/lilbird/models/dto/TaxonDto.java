@@ -5,6 +5,7 @@ import com.github.tavi.lilbird.annotations.IsLatinWord;
 import com.github.tavi.lilbird.models.entities.Taxon;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,23 +18,25 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 public class TaxonDto {
 
-    /** The name that identifies this taxon type (e.g. "family", "genus", etc.) */
-    @IsLatinWord
-    @JsonProperty("taxon_name")
-    String taxonName;
+    /** The identifier of this taxon type (e.g. "family", "genus", etc.) */
+    @NotBlank
+    @JsonProperty("taxon_type")
+    String taxonType;
 
     /** The main latin name of the taxon. */
+    @NotBlank
+    @IsLatinWord
     @JsonProperty("latin_name")
-    String latinName;
+    String nameLatin;
 
     /** The most common name of this taxon. */
     @JsonProperty("name")
-    String commonName;
+    String namePrimary;
 
     /** The total number of species in this taxon. */
     @Min(1)
-    @JsonProperty("species_length")
-    int speciesLength;
+    @JsonProperty("species_count")
+    int speciesCount;
 
 
 }

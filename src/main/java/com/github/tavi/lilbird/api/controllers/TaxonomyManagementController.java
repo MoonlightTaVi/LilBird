@@ -33,10 +33,10 @@ public class TaxonomyManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     public void postTaxon(@RequestBody @Valid TaxonDto dto) {
         Taxon taxon = new Taxon();
-        taxon.setTaxonName(dto.getTaxonName());
-        taxon.setLatinName(dto.getLatinName());
-        taxon.setCommonName(dto.getCommonName());
-        taxon.setSpeciesLength(dto.getSpeciesLength());
+        taxon.setTaxonType(dto.getTaxonType());
+        taxon.setNameLatin(dto.getNameLatin());
+        taxon.setNamePrimary(dto.getNamePrimary());
+        taxon.setSpeciesCount(dto.getSpeciesCount());
         service.save(taxon);
     }
 

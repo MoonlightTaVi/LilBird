@@ -1,4 +1,4 @@
 type: array
-description: A list of all of the birds, containing only the core information.
+description: Every bird row. Each item is only the latin name and its normalized id.
 items:
   $ref: "./bird-entity.yml"

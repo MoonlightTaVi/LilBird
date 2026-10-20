@@ -1,6 +1,9 @@
 package lilbird.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,68 +17,46 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.NameGroup;
 
 
 /**
- * Tests for the basic REST API.
+ * Tests for the bird card API.
  * <p>
- * <b>Warning</b>: The tests teardown the database when executed.
- * Use only within the 'test' profile.
+ * Each test starts from an empty database. Use only the {@code test} profile.
  */
-@SpringBootTest(
-    classes = App.class // Initialize the database
-)
+@SpringBootTest(classes = App.class)
 @AutoConfigureRestTestClient
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicHttpTests {
 
-    /** Some latin name to use. */
-    private final static String existentId = "Bubo scandiacus";
-    /** Some placeholder latin name to not be used. */
-    private final static String unexistentId = "Corvus corax";
-
-    /** The request body. */
     private static BirdCardDto cardDto;
+
+    @BeforeAll
+    public static void setup() {
+        cardDto = new BirdCardDto("Bubo scandiacus");
+        cardDto.setAlternativeNames(List.of(
+            "Owl", "Polar Owl", "Полярная сова", "Nyctea scandiaca"
+        ));
+    }
 
 
     @Autowired
     private RestTestClient rest;
 
-
-    /**
-     * Initializes data transfer objects for POSTing.
-     * They may be updated from here.
-     */
-    @BeforeAll
-    public static void setup() {
-        cardDto = new BirdCardDto();
-        cardDto.setNameLatin(existentId);
-        cardDto.setNameMain("Owl");
-
-        final NameGroup altNameGroup = new NameGroup();
-        altNameGroup.setNames(new String[] {"Polar Owl", "Snowy Owl"});
-        altNameGroup.setEtymology("Etymology of the owl.");
-        cardDto.addAltName(altNameGroup);
-    }
-
-
-    /** Posts a new bird before each test. */
+    /** Posts {@link #cardDto} before each test. */
     @BeforeEach
     public void postBird() {
         rest.post()
             .uri("/api/v1/admin/birds")
             .body(cardDto)
             .exchange()
-            .expectStatus().is2xxSuccessful();
+            .expectStatus().isCreated();
     }
 
-
     @Test
-    @DirtiesContext
     public void birdStatusCreated() {
-        BirdCardDto dto = new BirdCardDto();
-        dto.setNameLatin(unexistentId);
+        BirdCardDto dto = new BirdCardDto("Corvus corax");
         rest.post()
             .uri("/api/v1/admin/birds")
             .body(dto)
@@ -83,46 +64,63 @@ public class BasicHttpTests {
             .expectStatus().isCreated();
     }
 
-    /** Must always respond HTTP 200. */
     @Test
-    @DirtiesContext
-    public void setupSuccess() {
+    public void listBirds() {
         rest.get()
             .uri("/api/v1/birds")
             .exchange()
-            .expectStatus().is2xxSuccessful();
+            .expectStatus().isOk()
+            .expectBody(String.class)
+            .value(body -> {
+                assertTrue(body.contains("\"nameLatin\":\"Bubo scandiacus\""));
+                assertTrue(body.contains("\"nameNormal\":\"bubo+scandiacus\""));
+            });
     }
 
-    /** This card should NOT exist. */
     @Test
-    @DirtiesContext
     public void getNotFound() {
         rest.get()
-            .uri("/api/v1/birds/{title}", unexistentId)
+            .uri("/api/v1/birds/{title}", "Corvus corax")
             .exchange()
             .expectStatus().isNotFound();
     }
 
-    /** This card should exist. */
     @Test
-    @DirtiesContext
     public void getSuccessful() {
         rest.get()
             .uri("/api/v1/birds/{title}", cardDto.getNameLatin())
             .exchange()
-            .expectStatus().is2xxSuccessful()
+            .expectStatus().isOk()
+            .expectBody(BirdCardDto.class)
+            .value(card -> assertEquals(cardDto, card));
+    }
+
+    /** The normalized id resolves to the same card as the displayed latin name. */
+    @Test
+    public void getByNormalizedId() {
+        rest.get()
+            .uri("/api/v1/birds/{title}", "bubo+scandiacus")
+            .exchange()
+            .expectStatus().isOk()
             .expectBody(BirdCardDto.class)
             .value(card -> assertEquals(cardDto, card));
     }
 
     @Test
-    @DirtiesContext
     public void nameValidation() {
-        BirdCardDto invalidCard = new BirdCardDto();
-        invalidCard.setNameLatin("Hello, World!");
+        BirdCardDto invalidCard = new BirdCardDto("Hello, World!");
         rest.post()
             .uri("/api/v1/admin/birds")
             .body(invalidCard)
+            .exchange()
+            .expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void missingLatinName() {
+        rest.post()
+            .uri("/api/v1/admin/birds")
+            .body(new BirdCardDto())
             .exchange()
             .expectStatus().isBadRequest();
     }

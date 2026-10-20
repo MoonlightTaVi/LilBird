@@ -1,22 +1,20 @@
 type: object
-description: The core information about a bird.
+description: >
+  A bird row. The only stored fact is the latin name;
+  the normalized form of that name is the id.
 properties:
-    nameNormal:
-      description: >
-        Same as nameLatin, but normalized for convenience.
-        Serves as an ID of the entity.
-      type: string
-      example: bubo+scandiacus
-      pattern: (?=.*[a-z])[0-9a-z+]+
-    nameLatin:
-      description: The base latin name (unique).
-      type: string
-      pattern: (?=.*[a-zA-Z])[0-9a-zA-Z\s-]+
-      example: Bubo scandiacus
-    nameMain:
-      description: (Optional) The most common name.
-      type: string
-      example: Snowy owl
+  nameNormal:
+    description: >
+      nameLatin after normalization: lower-case, with each run of
+      white space replaced by "+". This is the id of the bird.
+    type: string
+    example: bubo+scandiacus
+    pattern: '(?=.*[a-z])[a-z+]+'
+  nameLatin:
+    description: The bird's own latin name.
+    type: string
+    pattern: '(?=.*[a-zA-Z])[a-zA-Z\s-]+'
+    example: Bubo scandiacus
 required:
   - nameLatin
   - nameNormal

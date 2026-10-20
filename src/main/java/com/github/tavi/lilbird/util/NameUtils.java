@@ -1,43 +1,24 @@
 package com.github.tavi.lilbird.util;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Locale;
+
 
 /** Utility methods for bird names. */
 public class NameUtils {
 
     /**
-     * This special symbol is used to separate names in a string.
-     */
-    public static String NAME_DELIMITER = ";";
-
-    /**
-     * Converts a name to a normal form.
-     * <p>
-     * The normal form is case-insensitive and does not include spaces.
-     * 
-     * @param title     The original name for the bird entry.
-     * @return          The same name, but normalized
+     * Converts a latin name to the form used as an id.
+     * Leading and trailing white space is removed. 
+     * The result is lower-case ({@link Locale#ENGLISH}) 
+     * and each remaining run of white space becomes {@code +}.
+     *
+     * @param title     The original latin name.
+     * @return          The same name, normalized.
      */
     public static String normalize(final String title) {
-        return title.toLowerCase()
-                .replace("\s", "+");
-    }
-
-    /** 
-     * A helper method to compare two lists of String arrays, 
-     * for the name groups.
-     * 
-     * @return {@code true} If both lists are equal, {@code false} otherwise.
-     */
-    public static boolean equals(List<String[]> groupA, List<String[]> groupB) {
-        if (groupA.size() != groupB.size())
-            return false;
-        for (int i = 0; i < groupA.size(); i++) {
-            if (!Arrays.equals(groupA.get(i), groupB.get(i)))
-                return false;
-        }
-        return true;
+        return title.trim()
+            .replaceAll("\\s+", "+")
+            .toLowerCase(Locale.ENGLISH);
     }
 
 }

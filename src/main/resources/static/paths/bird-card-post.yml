@@ -1,7 +1,9 @@
 post:
-    summary: Create a new bird entry or update the existing one from the card.
+    summary: Creates a bird from a card.
+    description: >
+      Stores the latin name on the bird and every other name as a separate name row.
     requestBody:
-      description: A card that contains the information about the bird.
+      description: The card to create.
       required: true
       content:
         application/json:
@@ -12,5 +14,3 @@ post:
         description: Created successfully.
       "400":
         description: Some of the parameters are invalid (see the schema).
-      "423":
-        description: When trying to update an existing entry which is currently locked.

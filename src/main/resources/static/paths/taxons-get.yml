@@ -4,10 +4,17 @@ get:
     - name: latin_name
       in: path
       required: true
-      description: The main latin name of the taxon.
+      description: >
+        The latin name of the taxon. The value is normalized before the lookup.
       schema:
         type: string
-        example: corvidae
+        example: Corvidae
   responses:
     "200":
       description: Ok.
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/taxon.yml
+    "404":
+      description: No such taxon.

@@ -1,0 +1,26 @@
+type: object
+description: >
+  A name attached to a bird, other than the bird's own latin name.
+  Either an alternative latin name or a localized name.
+required:
+  - value
+properties:
+  value:
+    description: The name as it is displayed.
+    type: string
+    minLength: 1
+    example: Snowy owl
+  latin:
+    description: >
+      True when value is an alternative latin name.
+      A latin value may contain only latin letters, hyphens and white space.
+    type: boolean
+    default: false
+    example: false
+  primary:
+    description: >
+      True for the single main localized name of the bird.
+      At most one name may be primary, and a primary name is not latin.
+    type: boolean
+    default: false
+    example: true

@@ -5,13 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
@@ -20,17 +19,17 @@ import com.github.tavi.lilbird.models.dto.TaxonDto;
 
 
 /**
- * Tests for taxonomy services.
+ * Tests for the taxonomy API. Each test starts from an empty database.
  */
 @SpringBootTest(classes = App.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureRestTestClient
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicTaxonsTests {
 
     static final String publicApi = "/api/v1/taxons";
     static final String privateApi = "/api/v1/admin/taxons";
-    
+
     static final String taxonName = "family";
     static final String latinName = "Corvidae";
     static final int speciesLength = 135;
@@ -39,27 +38,16 @@ public class BasicTaxonsTests {
     @BeforeAll
     public static void setup() {
         taxon = new TaxonDto();
-        taxon.setTaxonName(taxonName);
-        taxon.setLatinName(latinName);
-        taxon.setSpeciesLength(speciesLength);
+        taxon.setTaxonType(taxonName);
+        taxon.setNameLatin(latinName);
+        taxon.setSpeciesCount(speciesLength);
     }
 
 
     @Autowired
     RestTestClient client;
 
-    @Test
-    @Order(1)
-    public void notFoundSuccess() {
-        client.get()
-            .uri(publicApi + "/{name}", taxon.getLatinName())
-            .exchange()
-            .expectStatus().isNotFound();
-    }
-
-    @Test
-    @Order(2)
-    public void postSuccess() {
+    private void postTaxon() {
         client.post()
             .uri(privateApi)
             .body(taxon)
@@ -68,63 +56,106 @@ public class BasicTaxonsTests {
     }
 
     @Test
-    @Order(3)
-    public void getByNameSuccess() {
+    public void notFoundSuccess() {
         client.get()
-            .uri(publicApi + "/{name}", taxon.getLatinName())
+            .uri(publicApi + "/{name}", taxon.getNameLatin())
             .exchange()
-            .expectStatus().is2xxSuccessful()
-            .expectBody(TaxonDto.class)
-            .value(body -> body.equals(taxon));
+            .expectStatus().isNotFound();
     }
 
     @Test
-    @Order(4)
+    public void postSuccess() {
+        postTaxon();
+    }
+
+    @Test
+    public void getByNameSuccess() {
+        postTaxon();
+        client.get()
+            .uri(publicApi + "/{name}", taxon.getNameLatin())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(TaxonDto.class)
+            .value(body -> assertEquals(taxon, body));
+    }
+
+    @Test
     public void getByLengthSuccess() {
+        postTaxon();
         client.get()
             .uri(
-                publicApi + "/filter?taxon={taxon}&species={species}", 
-                taxon.getTaxonName(), 
-                taxon.getSpeciesLength()
+                publicApi + "/filter?taxon={taxon}&species={species}",
+                taxon.getTaxonType(),
+                taxon.getSpeciesCount()
             )
             .exchange()
-            .expectStatus().is2xxSuccessful()
-            .expectBody(List.class)
-            .value(l -> assertEquals(1, l.size()))
-            .value(l -> l.contains(taxon));
+            .expectStatus().isOk()
+            .expectBody(new ParameterizedTypeReference<List<TaxonDto>>() {})
+            .value(list -> {
+                assertEquals(1, list.size());
+                assertEquals(taxon, list.get(0));
+            });
     }
 
     @Test
-    @Order(4)
     public void getByLengthRangeSuccess() {
+        postTaxon();
         int offset = 5;
         client.get()
             .uri(
-                publicApi + "/filter?taxon={taxon}&species={species}&range={range}", 
-                taxon.getTaxonName(), 
-                taxon.getSpeciesLength(),
+                publicApi + "/filter?taxon={taxon}&species={species}&range={range}",
+                taxon.getTaxonType(),
+                taxon.getSpeciesCount() - offset,
                 offset * 2
             )
             .exchange()
-            .expectStatus().is2xxSuccessful()
-            .expectBody(List.class)
-            .value(l -> assertEquals(1, l.size()))
-            .value(l -> l.contains(taxon));
+            .expectStatus().isOk()
+            .expectBody(new ParameterizedTypeReference<List<TaxonDto>>() {})
+            .value(list -> {
+                assertEquals(1, list.size());
+                assertEquals(taxon, list.get(0));
+            });
     }
 
     @Test
-    @Order(4)
     public void getByLengthNotFound() {
+        postTaxon();
         client.get()
             .uri(
-                publicApi + "/filter?taxon={taxon}&species={species}", 
-                taxon.getTaxonName(), 
+                publicApi + "/filter?taxon={taxon}&species={species}",
+                taxon.getTaxonType(),
                 0
             )
             .exchange()
-            .expectStatus().is2xxSuccessful()
-            .expectBody(List.class)
-            .value(l -> assertEquals(0, l.size()));
+            .expectStatus().isOk()
+            .expectBody(new ParameterizedTypeReference<List<TaxonDto>>() {})
+            .value(list -> assertEquals(0, list.size()));
+    }
+
+    @Test
+    public void rejectInvalidLatinName() {
+        TaxonDto invalid = new TaxonDto();
+        invalid.setTaxonType("family");
+        invalid.setNameLatin("Hello, World!");
+        invalid.setSpeciesCount(1);
+        client.post()
+            .uri(privateApi)
+            .body(invalid)
+            .exchange()
+            .expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void rejectNonPositiveSpeciesLength() {
+        TaxonDto invalid = new TaxonDto();
+        invalid.setTaxonType("family");
+        invalid.setNameLatin("Corvidae");
+        invalid.setSpeciesCount(0);
+        client.post()
+            .uri(privateApi)
+            .body(invalid)
+            .exchange()
+            .expectStatus().isBadRequest();
     }
 
 }

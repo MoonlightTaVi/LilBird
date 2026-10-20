@@ -12,5 +12,3 @@ post:
         description: Created successfully.
       "400":
         description: Some of the parameters are invalid (see the schema).
-      "423":
-        description: When trying to update an existing entry which is currently locked.

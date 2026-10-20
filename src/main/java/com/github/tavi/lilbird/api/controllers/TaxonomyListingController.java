@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.entities.Taxon;
+import com.github.tavi.lilbird.models.dto.TaxonDto;
 import com.github.tavi.lilbird.services.TaxonomyService;
 
 
 /**
- * @see Taxon
+ * @see com.github.tavi.lilbird.models.entities.Taxon
  * @see TaxonomyService
  */
 @RestController
@@ -28,8 +28,8 @@ public class TaxonomyListingController {
 
     /** Returns the taxon with the given latin name if it exists. */
     @GetMapping("/{latin_name}")
-    public ResponseEntity<Taxon> getTaxon(@PathVariable("latin_name") String latinName) {
-        return ResponseEntity.ok(service.get(latinName));
+    public ResponseEntity<TaxonDto> getTaxon(@PathVariable("latin_name") String latinName) {
+        return ResponseEntity.ok(service.toDto(service.get(latinName)));
     }
 
     /**
@@ -42,7 +42,7 @@ public class TaxonomyListingController {
      * @return              The filtered list of taxons.
      */
     @GetMapping("/filter")
-    public ResponseEntity<List<Taxon>> getBySpecies(
+    public ResponseEntity<List<TaxonDto>> getBySpecies(
             @RequestParam(name = "taxon")
                 String taxonType,
             @RequestParam(name = "species")
@@ -51,13 +51,14 @@ public class TaxonomyListingController {
                 int range
         ) 
     {
-        List<Taxon> result = service
+        List<TaxonDto> result = service
                 .getAllOfType(taxonType)
                 .stream().parallel()
                 .filter(t -> {
-                    int s = t.getSpeciesLength();
+                    int s = t.getSpeciesCount();
                     return (s >= species && s <= species + range);
                 })
+                .map(service::toDto)
                 .toList();
         return ResponseEntity.ok(result);
     }

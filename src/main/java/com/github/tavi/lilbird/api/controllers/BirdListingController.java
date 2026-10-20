@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
 import com.github.tavi.lilbird.models.entities.Bird;
-import com.github.tavi.lilbird.models.entities.NameGroup;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 
@@ -32,24 +31,16 @@ public class BirdListingController {
         return ResponseEntity.ok(birds);
     }
     
-    /** Returns the bird card by the given name ID. */
+    /**
+     * Returns the bird card for this latin name.
+     * The path value is normalized before the lookup.
+     */
     @GetMapping("/{name_latin}")
     public ResponseEntity<BirdCardDto> getCardByName(
             @PathVariable("name_latin") String nameLatin
-        ) 
+        )
     {
-        final BirdCardDto card = new BirdCardDto();
-
-        final Bird bird = service.getEntryByName(nameLatin);
-        card.setNameLatin(bird.getNameLatin());
-        card.setNameMain(bird.getNameMain());
-
-        final List<NameGroup> nameGroups = service.getNamesOf(bird);
-        for (final NameGroup nameGroup : nameGroups) {
-            card.addAltName(nameGroup);
-        }
-
-        return ResponseEntity.ok(card);
+        return ResponseEntity.ok(service.getCard(nameLatin));
     }
 
 }

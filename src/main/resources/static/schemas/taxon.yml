@@ -7,7 +7,7 @@ properties:
   latin_name:
     description: The main latin name of the taxon.
     type: string
-    pattern: (?=.*[a-zA-Z])[0-9a-zA-Z\s-]+
+    pattern: '(?=.*[a-zA-Z])[a-zA-Z\s-]+'
     example: Corvidae
   name:
     description: The most common name of the taxon.

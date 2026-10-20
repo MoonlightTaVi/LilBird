@@ -1,7 +1,10 @@
 openapi: 3.1.0
 info:
   title: LilBird API for nBirds project
-  description: The API documentation for LilBird/nBirds ornithology service
+  description: >
+    The API documentation for LilBird/nBirds ornithology service.
+    A bird is identified by its latin name. Alternative latin names and
+    localized names are separate values on the bird card.
 servers:
   - url: http://localhost:8080
 paths:
@@ -11,7 +14,7 @@ paths:
     $ref: './paths/bird-card-get.yml'
   api/v1/admin/birds:
     $ref: './paths/bird-card-post.yml'
-  api/v1/taxons:
+  api/v1/admin/taxons:
     $ref: './paths/taxons-create.yml'
   api/v1/taxons/{latin_name}:
     $ref: './paths/taxons-get.yml'

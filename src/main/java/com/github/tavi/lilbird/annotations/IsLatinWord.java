@@ -12,26 +12,35 @@ import jakarta.validation.Payload;
 
 
 /**
- * This constraint annotation indicates that 
- * a {@code String} field / parameter may contain only latin letters of any case,
- * hyphens ("-") and white spaces.
+ * A {@code String} may contain only latin letters of any case,
+ * hyphens ({@code -}) and white space, and must contain at least one letter.
+ * {@code null} is not considered valid.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({
+    ElementType.FIELD, 
+    ElementType.PARAMETER
+})
 @Constraint(validatedBy = IsLatinWord.Validator.class)
 public @interface IsLatinWord {
 
     String message() default "The parameter may contain only latin letters, hyphens and white spaces.";
 
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
+
 
     class Validator implements ConstraintValidator<IsLatinWord,String> {
 
+        /** Letters, hyphens and white space, with at least one letter. */
+        public static final String PATTERN = "(?=.*[a-zA-Z])[a-zA-Z\\s-]+";
+
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
-            return value.matches("(?=.*[a-zA-Z])[0-9a-zA-Z\\s-]+");
+            return value != null && value.matches(PATTERN);
         }
 
     }
+
 }
