@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.exception.NotFoundException;
-import com.github.tavi.lilbird.models.dto.BirdCardDto;
+import com.github.tavi.lilbird.enums.TaxonType;
+import com.github.tavi.lilbird.models.dto.BirdCard;
+import com.github.tavi.lilbird.models.dto.TaxonCard;
 import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.models.entities.NameEntity;
 import com.github.tavi.lilbird.repositories.BirdNamesRepo;
@@ -38,28 +40,46 @@ public class BirdCardsService {
         return birdsRepo.save(bird);
     }
 
-    /** Creates or updates one name row. */
-    public NameEntity save(@NotNull NameEntity name) {
+    /** Creates or updates one name row, given its reference. */
+    public NameEntity save(@NotNull NameEntity name, @NotNull BirdEntity reference) {
+        name.setReference(reference);
         return namesRepo.save(name);
     }
 
     /**
      * Stores a new bird and the names from the card.
-     * The bird row receives only {@link BirdCardDto#getNameLatin()}.
+     * The bird row receives only {@link BirdCard#getNameLatin()}.
      */
     @Transactional
-    public BirdEntity save(@NotNull BirdCardDto card) {
+    public BirdEntity save(@NotNull BirdCard card) {
         BirdEntity bird = new BirdEntity(card.getNameLatin());
         bird = birdsRepo.save(bird);
 
         for (String nameValue : card.getAlternativeNames()) {
             // TODO Using RU locale currently
-            NameEntity nameEntity = new NameEntity(nameValue, "ru");
-            nameEntity.setReference(bird);
-            namesRepo.save(nameEntity);
+            save(new NameEntity(nameValue, "ru"), bird);
         }
 
         return bird;
+    }
+
+    /**
+     * Updates or creates a new bird entity that will hold the information about
+     * a taxon of some type.
+     */
+    @Transactional
+    public BirdEntity save(@NotNull TaxonCard taxon, @NotNull TaxonType type) {
+        BirdEntity e = new BirdEntity(taxon.getNameLatin());
+        e.setTaxonType(type);
+        e.setSpeciesCount(taxon.getSpeciesCount());
+        e = birdsRepo.save(e);
+
+        if (taxon.hasPrimaryName()) {
+            // TODO Using RU locale currently
+            save(new NameEntity(taxon.getNamePrimary(), "ru"), e);
+        }
+
+        return e;
     }
 
 
@@ -87,9 +107,9 @@ public class BirdCardsService {
     }
 
     /** The same bird as {@link #getBirdByName(String)}, assembled into a card. */
-    public BirdCardDto getCardByName(String nameLatin) {
+    public BirdCard getCardByName(String nameLatin) {
         BirdEntity entity = getBirdByName(nameLatin);
-        BirdCardDto card = new BirdCardDto(entity.getNameLatin());
+        BirdCard card = new BirdCard(entity.getNameLatin());
 
         List<String> alternativeNames = new ArrayList<>();
         for (NameEntity nameEnt : getNamesOf(nameLatin))
@@ -108,6 +128,31 @@ public class BirdCardsService {
     /** Same as {@link #getNamesOf(String)} for a bird that is already loaded. */
     public List<NameEntity> getNamesOf(@NotNull BirdEntity entry) {
         return namesRepo.findNamesByReference(entry.getId());
+    }
+
+
+    /** 
+     * Returns the list of all bird entries that correspond 
+     * to the gieven taxon type and species range.
+     */
+    public List<TaxonCard> filterTaxons(
+            TaxonType type, 
+            int minSpecies, 
+            int speciesRange
+        ) 
+    {
+        List<BirdEntity> entities = birdsRepo.filterByTaxon(
+            type, 
+            minSpecies, 
+            minSpecies + speciesRange
+        );
+        List<TaxonCard> result = new ArrayList<>();
+        for (BirdEntity e : entities) {
+            TaxonCard t = new TaxonCard(e);
+            // TODO Add alt names
+            result.add(t);
+        }
+        return result;
     }
 
 

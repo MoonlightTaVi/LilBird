@@ -1,5 +1,6 @@
 package com.github.tavi.lilbird.models.entities;
 
+import com.github.tavi.lilbird.enums.TaxonType;
 import com.github.tavi.lilbird.util.NameUtils;
 
 import jakarta.persistence.Column;
@@ -8,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +44,16 @@ public class BirdEntity {
      */
     @Column(name = "name_latin")
     private String nameLatin;
+
+
+    /** Type of this entry's taxon. Default to {@link TaxonType#SPECIES}. */
+    @Column(name = "taxon_type", nullable = false)
+    private TaxonType taxonType = TaxonType.SPECIES;
+
+    /** Number of species in this entry's taxon. Defaults to 1. */
+    @Min(1)
+    @Column(name = "species_count", nullable = false)
+    private int speciesCount = 1;
 
 
     /** Creates a new bird entity from its primary latin name. */

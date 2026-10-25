@@ -3,41 +3,42 @@ package com.github.tavi.lilbird.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.dto.TaxonDto;
-import com.github.tavi.lilbird.models.entities.Taxon;
-import com.github.tavi.lilbird.services.TaxonomyService;
+import com.github.tavi.lilbird.enums.TaxonType;
+import com.github.tavi.lilbird.models.dto.TaxonCard;
+import com.github.tavi.lilbird.services.BirdCardsService;
 
 import jakarta.validation.Valid;
 
 
-/**
- * @see Taxon
- * @see TaxonomyService
+/** 
+ * Manages the creation of taxon entries in the database. 
+ * 
+ * @see TaxonType
  */
 @Validated
 @RestController
-@RequestMapping("api/v1/admin")
+@RequestMapping("api/v1/admin/taxons")
 public class TaxonomyManagementController {
 
     @Autowired
-    TaxonomyService service;
+    BirdCardsService service;
 
-    /** Create a new {@link Taxon} database entry. */
-    @PostMapping("/taxons")
+    /** Create a new taxon database entry. */
+    @PostMapping("/{taxonType}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void postTaxon(@RequestBody @Valid TaxonDto dto) {
-        Taxon taxon = new Taxon();
-        taxon.setTaxonType(dto.getTaxonType());
-        taxon.setNameLatin(dto.getNameLatin());
-        taxon.setNamePrimary(dto.getNamePrimary());
-        taxon.setSpeciesCount(dto.getSpeciesCount());
-        service.save(taxon);
+    public void postTaxon(
+        @PathVariable("taxonType") TaxonType taxonType,
+        @RequestBody @Valid TaxonCard familyTaxon
+    ) 
+    {
+        service.save(familyTaxon, taxonType);
     }
 
 }

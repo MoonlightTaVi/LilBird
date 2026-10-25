@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.dto.BirdCardDto;
+import com.github.tavi.lilbird.models.dto.BirdCard;
 import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
@@ -36,7 +36,7 @@ public class BirdListingController {
      * The path value is normalized before the lookup.
      */
     @GetMapping("/{name_latin}")
-    public ResponseEntity<BirdCardDto> getCardByName(
+    public ResponseEntity<BirdCard> getCardByName(
             @PathVariable("name_latin") String nameLatin
         )
     {

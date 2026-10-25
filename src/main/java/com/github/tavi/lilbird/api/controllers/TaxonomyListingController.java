@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.dto.TaxonDto;
-import com.github.tavi.lilbird.services.TaxonomyService;
+import com.github.tavi.lilbird.enums.TaxonType;
+import com.github.tavi.lilbird.models.dto.TaxonCard;
+import com.github.tavi.lilbird.services.BirdCardsService;
 
 
 /**
@@ -23,44 +24,34 @@ import com.github.tavi.lilbird.services.TaxonomyService;
 public class TaxonomyListingController {
 
     @Autowired
-    TaxonomyService service;
+    BirdCardsService service;
 
-
-    /** Returns the taxon with the given latin name if it exists. */
-    @GetMapping("/{latin_name}")
-    public ResponseEntity<TaxonDto> getTaxon(@PathVariable("latin_name") String latinName) {
-        return ResponseEntity.ok(service.toDto(service.get(latinName)));
-    }
 
     /**
      * Filters the taxons by the taxon type/name and the species length.
-     * 
-     * @param taxonType     Example: family, order, class, species, etc.
-     * @param species       Number of species.
-     * @param range         The optional number added to the species length
-     *                      to filter within a specific range.
-     * @return              The filtered list of taxons.
      */
-    @GetMapping("/filter")
-    public ResponseEntity<List<TaxonDto>> getBySpecies(
-            @RequestParam(name = "taxon")
-                String taxonType,
-            @RequestParam(name = "species")
-                int species,
-            @RequestParam(name = "range", required = false, defaultValue = "0")
-                int range
+    @GetMapping("/filter/{taxonType}")
+    public ResponseEntity<List<TaxonCard>> getBySpecies(
+            @PathVariable(
+                "taxonType"
+            ) TaxonType taxonType,
+            @RequestParam(
+                name = "species"
+            ) int species,
+            @RequestParam(
+                name = "range", 
+                required = false, 
+                defaultValue = "0"
+            ) int range
         ) 
     {
-        List<TaxonDto> result = service
-                .getAllOfType(taxonType)
-                .stream().parallel()
-                .filter(t -> {
-                    int s = t.getSpeciesCount();
-                    return (s >= species && s <= species + range);
-                })
-                .map(service::toDto)
-                .toList();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(
+            service.filterTaxons(
+                taxonType, 
+                species, 
+                species + range
+            )
+        );
     }
 
 }

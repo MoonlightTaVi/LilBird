@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
-import com.github.tavi.lilbird.models.dto.BirdCardDto;
+import com.github.tavi.lilbird.models.dto.BirdCard;
 
 
 /**
@@ -30,11 +30,11 @@ import com.github.tavi.lilbird.models.dto.BirdCardDto;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicHttpTests {
 
-    private static BirdCardDto cardDto;
+    private static BirdCard cardDto;
 
     @BeforeAll
     public static void setup() {
-        cardDto = new BirdCardDto("Bubo scandiacus");
+        cardDto = new BirdCard("Bubo scandiacus");
         cardDto.setAlternativeNames(List.of(
             "Owl", "Polar Owl", "Полярная сова", "Nyctea scandiaca"
         ));
@@ -56,7 +56,7 @@ public class BasicHttpTests {
 
     @Test
     public void birdStatusCreated() {
-        BirdCardDto dto = new BirdCardDto("Corvus corax");
+        BirdCard dto = new BirdCard("Corvus corax");
         rest.post()
             .uri("/api/v1/admin/birds")
             .body(dto)
@@ -91,7 +91,7 @@ public class BasicHttpTests {
             .uri("/api/v1/birds/{title}", cardDto.getNameLatin())
             .exchange()
             .expectStatus().isOk()
-            .expectBody(BirdCardDto.class)
+            .expectBody(BirdCard.class)
             .value(card -> assertEquals(cardDto, card));
     }
 
@@ -102,13 +102,13 @@ public class BasicHttpTests {
             .uri("/api/v1/birds/{title}", "bubo scandiacus")
             .exchange()
             .expectStatus().isOk()
-            .expectBody(BirdCardDto.class)
+            .expectBody(BirdCard.class)
             .value(card -> assertEquals(cardDto, card));
     }
 
     @Test
     public void nameValidation() {
-        BirdCardDto invalidCard = new BirdCardDto("Hello, World!");
+        BirdCard invalidCard = new BirdCard("Hello, World!");
         rest.post()
             .uri("/api/v1/admin/birds")
             .body(invalidCard)
@@ -120,7 +120,7 @@ public class BasicHttpTests {
     public void missingLatinName() {
         rest.post()
             .uri("/api/v1/admin/birds")
-            .body(new BirdCardDto())
+            .body(new BirdCard())
             .exchange()
             .expectStatus().isBadRequest();
     }

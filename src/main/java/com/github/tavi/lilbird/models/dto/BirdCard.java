@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class BirdCardDto {
+public class BirdCard {
 
     /** The bird's own latin name. It identifies the bird. */
     @NotBlank
@@ -31,7 +31,7 @@ public class BirdCardDto {
 
 
     /** Creates a card from its latin name. */
-    public BirdCardDto(String nameLatin) {
+    public BirdCard(String nameLatin) {
         this.nameLatin = nameLatin;
     }
 
