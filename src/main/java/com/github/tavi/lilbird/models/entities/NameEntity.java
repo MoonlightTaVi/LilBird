@@ -19,14 +19,15 @@ import lombok.Setter;
 
 
 /**
- * A name of a {@link Bird} other than the bird's own latin name:
+ * A name of a {@link BirdEntity} other than the bird's own latin name:
  * either an alternative latin name or a localized name.
  */
 @Data @NoArgsConstructor
-@Entity(name = "BirdName")
-@Table(name = "BirdNames")
+@Entity(name = "Name")
+@Table(name = "Names")
 public class NameEntity {
 
+    /** A generated {@link GenerationType#SEQUENCE} ID. */
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -35,29 +36,29 @@ public class NameEntity {
     /** The bird this name belongs to. */
     @ManyToOne
     @JoinColumn(
-        name = "ref_name_normal",
-        referencedColumnName = "name_normal",
+        name = "ref_id",
+        referencedColumnName = "id",
         nullable = false
     )
-    private Bird entry; // TODO Reference Long ID
+    private BirdEntity reference;
 
     /** The locale of the name. Defaults to latin. */
     @Column(name = "locale", nullable = false)
     private Locale locale = Locale.forLanguageTag("la");
 
     /** The name as it is displayed for user. */
-    @Column(name = "displayed_name", nullable = false)
-    private String displayedName;
+    @Column(name = "name_displayed", nullable = false)
+    private String nameDisplayed;
 
     /** The normalized name, for seraching algorithms. Cannot be set directly. */
     @Setter(AccessLevel.NONE)
-    @Column(name = "normal_name", nullable = false)
-    private String normalName;
+    @Column(name = "name_normal", nullable = false)
+    private String nameNormal;
 
 
     /** Creates a new name entity from its displayed name value, given its locale. */
     public NameEntity(String nameValue, String languageTag) {
-        displayedName = nameValue;
+        nameDisplayed = nameValue;
         setLocale(Locale.forLanguageTag(languageTag));
     }
 
@@ -66,10 +67,10 @@ public class NameEntity {
      * Updates the displayed name. 
      * If the locale is set, updates the normalized name. 
      */
-    public void setDisplayedName(String nameValue) {
-        displayedName = nameValue;
+    public void setNameDisplayed(String nameValue) {
+        nameDisplayed = nameValue;
         if (locale != null)
-            normalName = NameUtils.normalize(displayedName, locale);
+            nameNormal = NameUtils.normalize(nameDisplayed, locale);
     }
 
     /** 
@@ -78,8 +79,8 @@ public class NameEntity {
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
-        if (displayedName != null)
-            normalName = NameUtils.normalize(displayedName, locale);
+        if (nameDisplayed != null)
+            nameNormal = NameUtils.normalize(nameDisplayed, locale);
     }
     
 

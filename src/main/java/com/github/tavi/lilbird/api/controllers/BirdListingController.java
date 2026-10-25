@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.Bird;
+import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 
@@ -23,11 +23,11 @@ public class BirdListingController {
     private BirdCardsService service;
 
 
-    /** The list of all {@link Bird} objects. */
+    /** The list of all {@link BirdEntity} objects. */
     @GetMapping("")
-    public ResponseEntity<List<Bird>> getBirds() {
+    public ResponseEntity<List<BirdEntity>> getBirds() {
         // TODO Might be expensive to send all of the DB rows; add paging?
-        final List<Bird> birds = service.getAllBirds();
+        final List<BirdEntity> birds = service.getAllBirds();
         return ResponseEntity.ok(birds);
     }
     
@@ -40,7 +40,7 @@ public class BirdListingController {
             @PathVariable("name_latin") String nameLatin
         )
     {
-        return ResponseEntity.ok(service.getCard(nameLatin));
+        return ResponseEntity.ok(service.getCardByName(nameLatin));
     }
 
 }

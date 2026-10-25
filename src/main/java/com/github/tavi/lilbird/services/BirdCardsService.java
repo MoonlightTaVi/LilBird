@@ -1,5 +1,6 @@
 package com.github.tavi.lilbird.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.github.tavi.lilbird.api.exception.NotFoundException;
 import com.github.tavi.lilbird.models.dto.BirdCardDto;
-import com.github.tavi.lilbird.models.entities.Bird;
+import com.github.tavi.lilbird.models.entities.BirdEntity;
 import com.github.tavi.lilbird.models.entities.NameEntity;
 import com.github.tavi.lilbird.repositories.BirdNamesRepo;
 import com.github.tavi.lilbird.repositories.BirdsRepo;
@@ -32,25 +33,8 @@ public class BirdCardsService {
     private BirdNamesRepo namesRepo;
 
 
-    /**
-     * Stores a new bird and the names from the card.
-     * The bird row receives only {@link BirdCardDto#getNameLatin()}.
-     */
-    @Transactional
-    public Bird save(@NotNull BirdCardDto card) {
-        Bird bird = birdsRepo.save(new Bird(card.getNameLatin()));
-
-        for (String nameValue : card.getAlternativeNames()) {
-            NameEntity nameEntity = new NameEntity(nameValue, "ru");
-            nameEntity.setEntry(bird);
-            namesRepo.save(nameEntity);
-        }
-
-        return bird;
-    }
-
     /** Creates a new bird row or updates the existing one. */
-    public Bird save(@NotNull Bird bird) {
+    public BirdEntity save(@NotNull BirdEntity bird) {
         return birdsRepo.save(bird);
     }
 
@@ -59,10 +43,31 @@ public class BirdCardsService {
         return namesRepo.save(name);
     }
 
+    /**
+     * Stores a new bird and the names from the card.
+     * The bird row receives only {@link BirdCardDto#getNameLatin()}.
+     */
+    @Transactional
+    public BirdEntity save(@NotNull BirdCardDto card) {
+        BirdEntity bird = new BirdEntity(card.getNameLatin());
+        bird = birdsRepo.save(bird);
+
+        for (String nameValue : card.getAlternativeNames()) {
+            // TODO Using RU locale currently
+            NameEntity nameEntity = new NameEntity(nameValue, "ru");
+            nameEntity.setReference(bird);
+            namesRepo.save(nameEntity);
+        }
+
+        return bird;
+    }
+
 
     /** Checks if a bird with this latin name exists. */
-    public boolean birdExists(String latinName) {
-        return birdsRepo.existsById(NameUtils.normalize(latinName));
+    public boolean checkBirdExists(String nameLatin) {
+        return !birdsRepo
+                .findByName(NameUtils.normalize(nameLatin))
+                .isEmpty();
     }
 
     /**
@@ -71,44 +76,43 @@ public class BirdCardsService {
      *
      * @throws NotFoundException    If no bird with this name is present.
      */
-    public Bird get(String latinName) throws NotFoundException {
+    public BirdEntity getBirdByName(String nameLatin) throws NotFoundException {
         return birdsRepo
-                .findById(NameUtils.normalize(latinName))
+                .findByName(NameUtils.normalize(nameLatin))
                 .orElseThrow(
                     () -> new NotFoundException(
-                        "The bird entry does not exist: " + latinName
+                        "The bird entry does not exist: " + nameLatin
                     )
                 );
+    }
+
+    /** The same bird as {@link #getBirdByName(String)}, assembled into a card. */
+    public BirdCardDto getCardByName(String nameLatin) {
+        BirdEntity entity = getBirdByName(nameLatin);
+        BirdCardDto card = new BirdCardDto(entity.getNameLatin());
+
+        List<String> alternativeNames = new ArrayList<>();
+        for (NameEntity nameEnt : getNamesOf(nameLatin))
+            alternativeNames.add(nameEnt.getNameDisplayed());
+        card.setAlternativeNames(alternativeNames);
+
+        return card;
     }
 
 
     /** Names stored for the bird with this latin name, in insertion order. */
     public List<NameEntity> getNamesOf(@NotNull String latinName) {
-        return namesRepo.findByReference(NameUtils.normalize(latinName));
+        return namesRepo.findNamesByPrimary(NameUtils.normalize(latinName));
     }
 
     /** Same as {@link #getNamesOf(String)} for a bird that is already loaded. */
-    public List<NameEntity> getNamesOf(@NotNull Bird entry) {
-        return getNamesOf(entry.getNameNormal());
-    }
-
-
-    /** The same bird as {@link #get(String)}, assembled into a card. */
-    public BirdCardDto getCard(String latinName) {
-        Bird bird = get(latinName);
-        BirdCardDto card = new BirdCardDto(bird.getNameLatin());
-        List<String> alternativeNames = getNamesOf(bird)
-            .stream()
-            .filter(name -> !name.isLocale("la"))
-            .map(name -> name.getDisplayedName())
-            .toList();
-        card.setAlternativeNames(alternativeNames);
-        return card;
+    public List<NameEntity> getNamesOf(@NotNull BirdEntity entry) {
+        return namesRepo.findNamesByReference(entry.getId());
     }
 
 
     /** Returns every bird row. */
-    public List<Bird> getAllBirds() {
+    public List<BirdEntity> getAllBirds() {
         return birdsRepo.findAll();
     }
 

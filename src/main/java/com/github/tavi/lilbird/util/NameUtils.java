@@ -11,6 +11,7 @@ public class NameUtils {
     /**
      * Normalizes the given string to {@link Form#NFC}, also
      * removing the trailing and consequtive white space.
+     * Uses {@link Locale#ENGLISH}.
      * 
      * @param text      Some string to normalize.
      * @return          This string, normalized (e.g. for searching).
