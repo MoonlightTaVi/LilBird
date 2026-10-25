@@ -73,7 +73,7 @@ public class BasicHttpTests {
             .expectBody(String.class)
             .value(body -> {
                 assertTrue(body.contains("\"nameLatin\":\"Bubo scandiacus\""));
-                assertTrue(body.contains("\"nameNormal\":\"bubo+scandiacus\""));
+                assertTrue(body.contains("\"nameNormal\":\"bubo scandiacus\""));
             });
     }
 
@@ -99,7 +99,7 @@ public class BasicHttpTests {
     @Test
     public void getByNormalizedId() {
         rest.get()
-            .uri("/api/v1/birds/{title}", "bubo+scandiacus")
+            .uri("/api/v1/birds/{title}", "bubo scandiacus")
             .exchange()
             .expectStatus().isOk()
             .expectBody(BirdCardDto.class)

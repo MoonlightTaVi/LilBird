@@ -1,5 +1,7 @@
 package com.github.tavi.lilbird.util;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Locale;
 
 
@@ -7,18 +9,31 @@ import java.util.Locale;
 public class NameUtils {
 
     /**
-     * Converts a latin name to the form used as an id.
-     * Leading and trailing white space is removed. 
-     * The result is lower-case ({@link Locale#ENGLISH}) 
-     * and each remaining run of white space becomes {@code +}.
-     *
-     * @param title     The original latin name.
-     * @return          The same name, normalized.
+     * Normalizes the given string to {@link Form#NFC}, also
+     * removing the trailing and consequtive white space.
+     * 
+     * @param text      Some string to normalize.
+     * @return          This string, normalized (e.g. for searching).
      */
-    public static String normalize(final String title) {
-        return title.trim()
-            .replaceAll("\\s+", "+")
+    public static String normalize(String text) {
+        return Normalizer.normalize(text, Form.NFC)
+            .trim()
+            .replaceAll("\\s+", " ")
             .toLowerCase(Locale.ENGLISH);
+    }
+
+    /**
+     * Same as {@link NameUtils#normalize(String)}, but with a custom locale.
+     * 
+     * @param text      Some string to normalize.
+     * @param locale    The locale of this text.
+     * @return          This string, normalized (e.g. for searching).
+     */
+    public static String normalize(String text, Locale locale) {
+        return Normalizer.normalize(text, Form.NFC)
+            .trim()
+            .replaceAll("\\s+", " ")
+            .toLowerCase(locale);
     }
 
 }
