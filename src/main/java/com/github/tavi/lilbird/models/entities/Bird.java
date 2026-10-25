@@ -15,7 +15,7 @@ import lombok.Setter;
 /**
  * A bird. The only value stored on the bird itself is its latin name.
  * The normalized form of that name is the primary key.
- * Localized names and alternative latin names belong to {@link BirdName}.
+ * Localized names and alternative latin names belong to {@link NameEntity}.
  */
 @Data @NoArgsConstructor
 @Entity(name = "Bird")
