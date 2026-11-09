@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.tavi.lilbird.api.models.TaxonCard;
 import com.github.tavi.lilbird.enums.TaxonType;
-import com.github.tavi.lilbird.models.dto.TaxonCard;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 

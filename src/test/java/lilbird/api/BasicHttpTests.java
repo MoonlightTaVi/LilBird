@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
-import com.github.tavi.lilbird.models.dto.BirdCard;
+import com.github.tavi.lilbird.api.models.BirdCard;
 
 
 /**

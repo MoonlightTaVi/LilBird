@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.models.entities;
+package com.github.tavi.lilbird.repositories.models;
 
 import com.github.tavi.lilbird.enums.TaxonType;
 import com.github.tavi.lilbird.util.NameUtils;

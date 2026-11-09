@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.github.tavi.lilbird.enums.TaxonType;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
+import com.github.tavi.lilbird.repositories.models.BirdEntity;
 
 
 /** The base repository for birds (as unique entries) in the database. */

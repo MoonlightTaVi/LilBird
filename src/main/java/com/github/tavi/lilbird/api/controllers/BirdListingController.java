@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.dto.BirdCard;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
+import com.github.tavi.lilbird.api.models.BirdCard;
+import com.github.tavi.lilbird.repositories.models.BirdEntity;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 

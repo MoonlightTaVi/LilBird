@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.tavi.lilbird.models.dto.BirdCard;
+import com.github.tavi.lilbird.api.models.BirdCard;
 import com.github.tavi.lilbird.services.BirdCardsService;
 
 import jakarta.validation.Valid;

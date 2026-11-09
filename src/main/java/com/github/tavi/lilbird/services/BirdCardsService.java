@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.github.tavi.lilbird.api.models.BirdCard;
+import com.github.tavi.lilbird.api.models.TaxonCard;
 import com.github.tavi.lilbird.enums.TaxonType;
 import com.github.tavi.lilbird.exceptions.NotFoundException;
-import com.github.tavi.lilbird.models.dto.BirdCard;
-import com.github.tavi.lilbird.models.dto.TaxonCard;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
-import com.github.tavi.lilbird.models.entities.NameEntity;
 import com.github.tavi.lilbird.repositories.BirdNamesRepo;
 import com.github.tavi.lilbird.repositories.BirdsRepo;
+import com.github.tavi.lilbird.repositories.models.BirdEntity;
+import com.github.tavi.lilbird.repositories.models.NameEntity;
 import com.github.tavi.lilbird.util.NameUtils;
 
 import jakarta.validation.constraints.NotNull;

@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.github.tavi.lilbird.models.entities.BirdEntity;
-import com.github.tavi.lilbird.models.entities.NameEntity;
+import com.github.tavi.lilbird.repositories.models.BirdEntity;
+import com.github.tavi.lilbird.repositories.models.NameEntity;
 
 
 /**

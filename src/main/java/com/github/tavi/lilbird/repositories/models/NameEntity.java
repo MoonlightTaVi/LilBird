@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.models.entities;
+package com.github.tavi.lilbird.repositories.models;
 
 import java.util.Locale;
 

@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.models.dto;
+package com.github.tavi.lilbird.api.models;
 
 import java.util.ArrayList;
 import java.util.List;

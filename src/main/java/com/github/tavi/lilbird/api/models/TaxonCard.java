@@ -1,8 +1,8 @@
-package com.github.tavi.lilbird.models.dto;
+package com.github.tavi.lilbird.api.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tavi.lilbird.annotations.IsLatinWord;
-import com.github.tavi.lilbird.models.entities.BirdEntity;
+import com.github.tavi.lilbird.repositories.models.BirdEntity;
 
 import jakarta.validation.constraints.Min;
 import lombok.Data;
