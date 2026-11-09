@@ -32,6 +32,7 @@ public class BasicTaxonsTests {
     static final String privateApi = "/api/v1/admin/taxons";
 
     static final TaxonType taxonType = TaxonType.FAMILY;
+    static final String primaryName = "Corvids";
     static final String latinName = "Corvidae";
     static final int speciesLength = 135;
     static TaxonCard taxon;
@@ -39,6 +40,7 @@ public class BasicTaxonsTests {
     @BeforeAll
     public static void setup() {
         taxon = new TaxonCard();
+        taxon.setNamePrimary(primaryName);
         taxon.setNameLatin(latinName);
         taxon.setSpeciesCount(speciesLength);
     }
@@ -55,28 +57,9 @@ public class BasicTaxonsTests {
             .expectStatus().isCreated();
     }
 
-    //@Test
-    public void notFoundSuccess() {
-        client.get()
-            .uri(publicApi + "/{name}", taxon.getNameLatin())
-            .exchange()
-            .expectStatus().isNotFound();
-    }
-
     @Test
     public void postSuccess() {
         postTaxon();
-    }
-
-    //@Test
-    public void getByNameSuccess() {
-        postTaxon();
-        client.get()
-            .uri(publicApi + "/{name}", taxon.getNameLatin())
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(TaxonCard.class)
-            .value(body -> assertEquals(taxon, body));
     }
 
     @Test
