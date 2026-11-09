@@ -3,6 +3,7 @@ package lilbird.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ public class BasicTaxonsTests {
     static final String postUri = "/api/v1/admin/taxons/";
 
     static final TaxonType taxonType = TaxonType.FAMILY;
+    static final Locale locale = Locale.ENGLISH;
     static final String primaryName = "Corvids";
     static final String latinName = "Corvidae";
     static final int speciesLength = 135;
@@ -40,6 +42,7 @@ public class BasicTaxonsTests {
     @BeforeAll
     public static void setup() {
         taxon = new TaxonCard();
+        taxon.setLocale(locale);
         taxon.setTaxonType(taxonType);
         taxon.setNamePrimary(primaryName);
         taxon.setNameLatin(latinName);

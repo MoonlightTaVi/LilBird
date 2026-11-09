@@ -56,17 +56,15 @@ public class TaxonService {
     }
 
     private void savePrimaryName(BirdEntity reference, TaxonCard taxonCard) {
-        // TODO Card must rely on locale, not on language tag
-        Locale locale = Locale.forLanguageTag(taxonCard.getLangTag());
         PrimaryNameEntity primaryNameEntity = new PrimaryNameEntity();
         primaryNameEntity.setReference(reference);
-        primaryNameEntity.setLocale(locale);
+        primaryNameEntity.setLocale(taxonCard.getLocale());
         primaryNameEntity.setNameValue(taxonCard.getNamePrimary());
         primaryNamesRepo.save(primaryNameEntity);
     }
 
     private void saveAlternativeNames(BirdEntity reference, TaxonCard taxonCard) {
-        Locale locale = Locale.forLanguageTag(taxonCard.getLangTag());
+        Locale locale = taxonCard.getLocale();
         for (String altName : taxonCard.getAlternativeNames())
             namesRepo.save(new NameEntity(altName, locale, reference));
     }
@@ -75,11 +73,14 @@ public class TaxonService {
     /** 
      * Returns the list of all bird entries that correspond 
      * to the given taxon type and species range.
+     * 
+     * @param locale    Will be used to fetch the alternative localized names.
      */
     public List<TaxonCard> filterTaxons(
             TaxonType type, 
             int minSpecies, 
-            int speciesRange
+            int speciesRange,
+            Locale locale
         ) 
     {
         List<BirdEntity> taxonEntities = birdsRepo.filterByTaxon(
@@ -89,10 +90,9 @@ public class TaxonService {
         );
         List<TaxonCard> taxonCards = new ArrayList<>();
         for (BirdEntity taxonEntity : taxonEntities) {
-            // TODO Currently using RU locale
             TaxonCard taxonCard = getTaxonCardFromEntity(
                 taxonEntity, 
-                Locale.forLanguageTag("ru")
+                locale
             );
             taxonCards.add(taxonCard);
         }
@@ -101,7 +101,7 @@ public class TaxonService {
 
     private TaxonCard getTaxonCardFromEntity(BirdEntity taxonEntity, Locale locale) {
         TaxonCard taxonCard = new TaxonCard(taxonEntity);
-        taxonCard.setTaxonType(taxonEntity.getTaxonType());
+        taxonCard.setLocale(locale);
         primaryNamesRepo
             .getOpt(taxonEntity.getId(), locale)
             .ifPresent(

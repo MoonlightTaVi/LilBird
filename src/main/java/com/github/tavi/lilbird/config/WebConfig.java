@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.github.tavi.lilbird.util.LocaleConverter;
 import com.github.tavi.lilbird.util.enums.TaxonType.TaxonTypeConverter;
 
 
@@ -13,8 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        // In order to use enums in API:
+        // App-specific converters
         registry.addConverter(new TaxonTypeConverter());
+        registry.addConverter(new LocaleConverter());
     }
     
 }

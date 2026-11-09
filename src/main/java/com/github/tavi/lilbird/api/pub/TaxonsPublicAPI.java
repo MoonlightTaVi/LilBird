@@ -1,6 +1,7 @@
 package com.github.tavi.lilbird.api.pub;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +43,20 @@ public class TaxonsPublicAPI {
                 name = "range", 
                 required = false, 
                 defaultValue = "0"
-            ) int range
+            ) int range,
+            @RequestParam(
+                name = "locale",
+                required = false,
+                defaultValue = "en"
+            ) Locale locale
         ) 
     {
         return ResponseEntity.ok(
             service.filterTaxons(
                 taxonType, 
                 species, 
-                species + range
+                species + range,
+                locale
             )
         );
     }
