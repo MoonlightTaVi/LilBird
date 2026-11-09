@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.api.controllers;
+package com.github.tavi.lilbird.api.pub;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import com.github.tavi.lilbird.services.BirdCardsService;
 /** The public API for database viewing. */
 @RestController
 @RequestMapping(value = "api/v1/birds")
-public class BirdListingController {
+public class BirdsPublicAPI {
 
     @Autowired
     private BirdCardsService service;

@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.api.controllers;
+package com.github.tavi.lilbird.api.pub;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import com.github.tavi.lilbird.util.enums.TaxonType;
  */
 @RestController
 @RequestMapping("api/v1/taxons")
-public class TaxonomyListingController {
+public class TaxonsPublicAPI {
 
     @Autowired
     BirdCardsService service;

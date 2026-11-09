@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.api.controllers;
+package com.github.tavi.lilbird.api.pvt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("api/v1/admin")
-public class BirdManagementController {
+public class BirdsAdminAPI {
 
     @Autowired
     private BirdCardsService service;
