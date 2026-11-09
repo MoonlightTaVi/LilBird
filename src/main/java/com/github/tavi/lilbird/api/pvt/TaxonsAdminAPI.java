@@ -35,10 +35,10 @@ public class TaxonsAdminAPI {
     @ResponseStatus(HttpStatus.CREATED)
     public void postTaxon(
         @PathVariable("taxonType") TaxonType taxonType,
-        @RequestBody @Valid TaxonCard familyTaxon
+        @RequestBody @Valid TaxonCard taxonCard
     ) 
     {
-        service.save(familyTaxon, taxonType);
+        service.saveCard(taxonCard, taxonType);
     }
 
 }
