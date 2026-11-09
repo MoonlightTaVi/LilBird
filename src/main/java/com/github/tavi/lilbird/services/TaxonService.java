@@ -1,6 +1,5 @@
 package com.github.tavi.lilbird.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,7 +17,6 @@ import com.github.tavi.lilbird.repositories.models.PrimaryNameEntity;
 import com.github.tavi.lilbird.util.enums.TaxonType;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
 
 
 /** Same as {@link BirdService}, but for {@link TaxonCard} management. */
@@ -33,86 +31,104 @@ public class TaxonService {
     @Autowired
     PrimaryNamesRepo primaryNamesRepo;
 
-    
     /** 
      * Decomposes the card into {@link BirdEntity} 
      * and a set of its {@link NameEntity} instances,
      * then saves them separately.
      */
-    @Transactional
-    public void saveTaxonCard(@NotNull TaxonCard taxonCard) {
-        BirdEntity referencedEntity = saveCardAsEntity(taxonCard);
-        if (taxonCard.hasNamePrimary())
-            savePrimaryName(referencedEntity, taxonCard);
-        saveAlternativeNames(referencedEntity, taxonCard);
-    }
-
-    private BirdEntity saveCardAsEntity(TaxonCard taxonCard) {
-        BirdEntity taxonEntity = new BirdEntity();
-        taxonEntity.setTaxonType(taxonCard.getTaxonType());
-        taxonEntity.setNameLatin(taxonCard.getNameLatin());
-        taxonEntity.setSpeciesCount(taxonCard.getSpeciesCount());
-        return birdsRepo.save(taxonEntity);
-    }
-
-    private void savePrimaryName(BirdEntity reference, TaxonCard taxonCard) {
-        PrimaryNameEntity primaryNameEntity = new PrimaryNameEntity();
-        primaryNameEntity.setReference(reference);
-        primaryNameEntity.setLocale(taxonCard.getLocale());
-        primaryNameEntity.setNameValue(taxonCard.getNamePrimary());
-        primaryNamesRepo.save(primaryNameEntity);
-    }
-
-    private void saveAlternativeNames(BirdEntity reference, TaxonCard taxonCard) {
-        Locale locale = taxonCard.getLocale();
-        for (String altName : taxonCard.getAlternativeNames())
-            namesRepo.save(new NameEntity(altName, locale, reference));
+    @Transactional 
+    public void saveCard(TaxonCard taxonCard) {
+        new TaxonDescriptor(taxonCard).saveToDatabase();
     }
 
 
-    /** 
-     * Returns the list of all bird entries that correspond 
-     * to the given taxon type and species range.
-     * 
-     * @param locale    Will be used to fetch the alternative localized names.
-     */
-    public List<TaxonCard> filterTaxons(
+    /** @param locale Will be used to fetch the alternative localized names. */
+    public List<TaxonCard> filterBySpeciesRange(
             TaxonType type, 
             int minSpecies, 
             int speciesRange,
             Locale locale
         ) 
     {
-        List<BirdEntity> taxonEntities = birdsRepo.filterByTaxon(
-            type, 
-            minSpecies, 
-            minSpecies + speciesRange
-        );
-        List<TaxonCard> taxonCards = new ArrayList<>();
-        for (BirdEntity taxonEntity : taxonEntities) {
-            TaxonCard taxonCard = getTaxonCardFromEntity(
-                taxonEntity, 
-                locale
-            );
-            taxonCards.add(taxonCard);
-        }
-        return taxonCards;
+        return birdsRepo.filterByTaxon(
+                type, 
+                minSpecies, 
+                minSpecies + speciesRange
+            )
+            .stream()
+            .map(bird -> new TaxonDescriptor(bird, locale))
+            .map(desc -> desc.loadCard())
+            .toList();
     }
 
-    private TaxonCard getTaxonCardFromEntity(BirdEntity taxonEntity, Locale locale) {
-        TaxonCard taxonCard = new TaxonCard(taxonEntity);
-        taxonCard.setLocale(locale);
-        primaryNamesRepo
-            .getOpt(taxonEntity.getId(), locale)
-            .ifPresent(
-                primaryName -> {
-                    taxonCard.setNamePrimary(primaryName.getNameValue());
-                }
-            );
-        for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId())) {
-            taxonCard.addAltName(nameEntity);
+
+    /** A helper class that holds the common data between cards and entities. */
+    private class TaxonDescriptor {
+
+        public TaxonCard taxonCard;
+        public BirdEntity taxonEntity;
+        public Locale locale;
+
+        /** Constructs a descriptor from a card for saving an entity. */
+        private TaxonDescriptor(TaxonCard taxonCard) {
+            this.taxonCard = taxonCard;
+            taxonEntity = new BirdEntity();
+            taxonEntity.setTaxonType(taxonCard.getTaxonType());
+            taxonEntity.setNameLatin(taxonCard.getNameLatin());
+            taxonEntity.setSpeciesCount(taxonCard.getSpeciesCount());
+            locale = taxonCard.getLocale();
         }
-        return taxonCard;
+
+        /** Constructs a descriptor from an entity for loading a card. */
+        private TaxonDescriptor(BirdEntity taxonEntity, Locale locale) {
+            taxonCard = new TaxonCard(taxonEntity);
+            taxonCard.setLocale(locale);
+            this.taxonEntity = taxonEntity;
+            this.locale = locale;
+        }
+
+        
+        /** Decomposes the card and saves it to the database. */
+        private void saveToDatabase() {
+            taxonEntity = birdsRepo.save(taxonEntity);
+            if (taxonCard.hasNamePrimary())
+                savePrimaryName();
+            saveAlternativeNames();
+        }
+
+        /** Loads the taxon data and composes it into a card. */
+        private TaxonCard loadCard() {
+            loadPrimaryName();
+            loadAlternativeNames();
+            return taxonCard;
+        }
+
+
+        private PrimaryNameEntity savePrimaryName() {
+            PrimaryNameEntity primaryNameEntity = new PrimaryNameEntity(
+                taxonEntity, 
+                locale, 
+                taxonCard.getNamePrimary()
+            );
+            return primaryNamesRepo.save(primaryNameEntity);
+        }
+
+        private void saveAlternativeNames() {
+            for (String altName : taxonCard.getAlternativeNames())
+                namesRepo.save(new NameEntity(altName, locale, taxonEntity));
+        }
+
+        private void loadPrimaryName() {
+            primaryNamesRepo.getOpt(taxonEntity.getId(), locale)
+                .ifPresent(pn -> taxonCard.setNamePrimary(pn.getNameValue()));
+        }
+
+        private void loadAlternativeNames() {
+            for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId())) {
+                taxonCard.addAltName(nameEntity);
+            }
+        }
+
     }
 
 }

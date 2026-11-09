@@ -52,7 +52,7 @@ public class TaxonsPublicAPI {
         ) 
     {
         return ResponseEntity.ok(
-            service.filterTaxons(
+            service.filterBySpeciesRange(
                 taxonType, 
                 species, 
                 species + range,

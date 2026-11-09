@@ -36,7 +36,7 @@ public class TaxonsAdminAPI {
         @RequestBody @Valid TaxonCard taxonCard
     ) 
     {
-        service.saveTaxonCard(taxonCard);
+        service.saveCard(taxonCard);
     }
 
 }
