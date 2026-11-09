@@ -38,7 +38,7 @@ public class TaxonsAdminAPI {
         @RequestBody @Valid TaxonCard taxonCard
     ) 
     {
-        service.saveCard(taxonCard, taxonType);
+        service.saveTaxonOfType(taxonCard, taxonType);
     }
 
 }

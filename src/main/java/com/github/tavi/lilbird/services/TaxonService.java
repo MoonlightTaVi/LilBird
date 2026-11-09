@@ -40,31 +40,35 @@ public class TaxonService {
      * then saves them separately.
      */
     @Transactional
-    public BirdEntity save(@NotNull TaxonCard taxonCard, @NotNull TaxonType type) {
+    public void saveTaxonOfType(@NotNull TaxonCard taxonCard, @NotNull TaxonType taxonType) {
+        BirdEntity referencedEntity = saveCardAsEntity(taxonCard, taxonType);
+        if (taxonCard.hasNamePrimary())
+            savePrimaryName(referencedEntity, taxonCard);
+        saveAlternativeNames(referencedEntity, taxonCard);
+    }
+
+    private BirdEntity saveCardAsEntity(TaxonCard taxonCard, TaxonType taxonType) {
         BirdEntity taxonEntity = new BirdEntity(taxonCard.getNameLatin());
-        taxonEntity.setTaxonType(type);
         taxonEntity.setSpeciesCount(taxonCard.getSpeciesCount());
+        taxonEntity.setTaxonType(taxonType);
         taxonEntity = birdsRepo.save(taxonEntity);
-        savePrimaryNameIfPresent(taxonEntity, taxonCard);
-        saveAlternativeNames(taxonEntity, taxonCard);
         return taxonEntity;
     }
 
-    private void savePrimaryNameIfPresent(BirdEntity taxonEntity, TaxonCard taxonCard) {
-        if (!taxonCard.hasNamePrimary())
-            return;
+    private void savePrimaryName(BirdEntity reference, TaxonCard taxonCard) {
+        // TODO Card must rely on locale, not on language tag
         Locale locale = Locale.forLanguageTag(taxonCard.getLangTag());
         PrimaryNameEntity primaryNameEntity = new PrimaryNameEntity();
-            primaryNameEntity.setReference(taxonEntity);
-            primaryNameEntity.setLocale(locale);
-            primaryNameEntity.setNameValue(taxonCard.getNamePrimary());
-            primaryNamesRepo.save(primaryNameEntity);
+        primaryNameEntity.setReference(reference);
+        primaryNameEntity.setLocale(locale);
+        primaryNameEntity.setNameValue(taxonCard.getNamePrimary());
+        primaryNamesRepo.save(primaryNameEntity);
     }
 
-    private void saveAlternativeNames(BirdEntity taxonEntity, TaxonCard taxonCard) {
+    private void saveAlternativeNames(BirdEntity reference, TaxonCard taxonCard) {
         Locale locale = Locale.forLanguageTag(taxonCard.getLangTag());
         for (String altName : taxonCard.getAlternativeNames())
-            namesRepo.save(new NameEntity(altName, locale, taxonEntity));
+            namesRepo.save(new NameEntity(altName, locale, reference));
     }
 
 
