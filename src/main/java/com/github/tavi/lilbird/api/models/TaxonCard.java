@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tavi.lilbird.repositories.models.BirdEntity;
 import com.github.tavi.lilbird.repositories.models.NameEntity;
 import com.github.tavi.lilbird.util.annotations.IsLatinWord;
+import com.github.tavi.lilbird.util.enums.TaxonType;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -20,8 +21,12 @@ import lombok.NoArgsConstructor;
  */
 @Data @NoArgsConstructor
 public class TaxonCard {
+
+    @JsonProperty 
+    private TaxonType taxonType;
     
     /** The language tag associated with the locale; defaults to {@code ru}. */
+    @Deprecated(forRemoval = true)
     @JsonProperty("lang_tag")
     private String langTag = "ru";
 

@@ -28,8 +28,8 @@ import com.github.tavi.lilbird.util.enums.TaxonType;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicTaxonsTests {
 
-    static final String publicApi = "/api/v1/taxons";
-    static final String privateApi = "/api/v1/admin/taxons";
+    static final String filterUri = "/api/v1/taxons/filter";
+    static final String postUri = "/api/v1/admin/taxons/";
 
     static final TaxonType taxonType = TaxonType.FAMILY;
     static final String primaryName = "Corvids";
@@ -40,6 +40,7 @@ public class BasicTaxonsTests {
     @BeforeAll
     public static void setup() {
         taxon = new TaxonCard();
+        taxon.setTaxonType(taxonType);
         taxon.setNamePrimary(primaryName);
         taxon.setNameLatin(latinName);
         taxon.setSpeciesCount(speciesLength);
@@ -51,7 +52,7 @@ public class BasicTaxonsTests {
 
     private void postTaxon() {
         client.post()
-            .uri(privateApi + "/family")
+            .uri(postUri)
             .body(taxon)
             .exchange()
             .expectStatus().isCreated();
@@ -67,7 +68,7 @@ public class BasicTaxonsTests {
         postTaxon();
         client.get()
             .uri(
-                publicApi + "/filter/family?species={species}",
+                filterUri + "/family?species={species}",
                 taxon.getSpeciesCount()
             )
             .exchange()
@@ -85,7 +86,7 @@ public class BasicTaxonsTests {
         int offset = 5;
         client.get()
             .uri(
-                publicApi + "/filter/family?species={species}&range={range}",
+                filterUri + "/family?species={species}&range={range}",
                 taxon.getSpeciesCount() - offset,
                 offset * 2
             )
@@ -103,7 +104,7 @@ public class BasicTaxonsTests {
         postTaxon();
         client.get()
             .uri(
-                publicApi + "/filter/family?species={species}",
+                filterUri + "/family?species={species}",
                 0
             )
             .exchange()
@@ -118,7 +119,7 @@ public class BasicTaxonsTests {
         invalid.setNameLatin("Hello, World!");
         invalid.setSpeciesCount(1);
         client.post()
-            .uri(privateApi + "/family")
+            .uri(postUri)
             .body(invalid)
             .exchange()
             .expectStatus().isBadRequest();
@@ -130,7 +131,7 @@ public class BasicTaxonsTests {
         invalid.setNameLatin("Corvidae");
         invalid.setSpeciesCount(0);
         client.post()
-            .uri(privateApi + "/family")
+            .uri(postUri)
             .body(invalid)
             .exchange()
             .expectStatus().isBadRequest();

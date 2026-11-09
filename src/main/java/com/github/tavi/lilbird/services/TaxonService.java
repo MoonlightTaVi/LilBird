@@ -40,19 +40,19 @@ public class TaxonService {
      * then saves them separately.
      */
     @Transactional
-    public void saveTaxonOfType(@NotNull TaxonCard taxonCard, @NotNull TaxonType taxonType) {
-        BirdEntity referencedEntity = saveCardAsEntity(taxonCard, taxonType);
+    public void saveTaxonCard(@NotNull TaxonCard taxonCard) {
+        BirdEntity referencedEntity = saveCardAsEntity(taxonCard);
         if (taxonCard.hasNamePrimary())
             savePrimaryName(referencedEntity, taxonCard);
         saveAlternativeNames(referencedEntity, taxonCard);
     }
 
-    private BirdEntity saveCardAsEntity(TaxonCard taxonCard, TaxonType taxonType) {
-        BirdEntity taxonEntity = new BirdEntity(taxonCard.getNameLatin());
+    private BirdEntity saveCardAsEntity(TaxonCard taxonCard) {
+        BirdEntity taxonEntity = new BirdEntity();
+        taxonEntity.setTaxonType(taxonCard.getTaxonType());
+        taxonEntity.setNameLatin(taxonCard.getNameLatin());
         taxonEntity.setSpeciesCount(taxonCard.getSpeciesCount());
-        taxonEntity.setTaxonType(taxonType);
-        taxonEntity = birdsRepo.save(taxonEntity);
-        return taxonEntity;
+        return birdsRepo.save(taxonEntity);
     }
 
     private void savePrimaryName(BirdEntity reference, TaxonCard taxonCard) {
@@ -101,11 +101,14 @@ public class TaxonService {
 
     private TaxonCard getTaxonCardFromEntity(BirdEntity taxonEntity, Locale locale) {
         TaxonCard taxonCard = new TaxonCard(taxonEntity);
+        taxonCard.setTaxonType(taxonEntity.getTaxonType());
         primaryNamesRepo
             .getOpt(taxonEntity.getId(), locale)
-            .ifPresent(primaryName -> {
-                taxonCard.setNamePrimary(primaryName.getNameValue());
-            });
+            .ifPresent(
+                primaryName -> {
+                    taxonCard.setNamePrimary(primaryName.getNameValue());
+                }
+            );
         for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId())) {
             taxonCard.addAltName(nameEntity);
         }

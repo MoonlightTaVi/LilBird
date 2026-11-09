@@ -3,7 +3,6 @@ package com.github.tavi.lilbird.api.pvt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,14 +30,13 @@ public class TaxonsAdminAPI {
     TaxonService service;
 
     /** Create a new taxon database entry. */
-    @PostMapping("/{taxonType}")
+    @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     public void postTaxon(
-        @PathVariable("taxonType") TaxonType taxonType,
         @RequestBody @Valid TaxonCard taxonCard
     ) 
     {
-        service.saveTaxonOfType(taxonCard, taxonType);
+        service.saveTaxonCard(taxonCard);
     }
 
 }
