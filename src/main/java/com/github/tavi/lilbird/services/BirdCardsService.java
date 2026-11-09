@@ -90,20 +90,9 @@ public class BirdCardsService {
                 .isEmpty();
     }
 
-    /**
-     * Finds the bird by its latin name.
-     * The argument is normalized before the lookup.
-     *
-     * @throws NotFoundException    If no bird with this name is present.
-     */
+    /** @param nameLatin    The primary latin name (normalized automatically). */
     public BirdEntity getBirdByName(String nameLatin) throws NotFoundException {
-        return birdsRepo
-                .findByName(NameUtils.normalize(nameLatin))
-                .orElseThrow(
-                    () -> new NotFoundException(
-                        "The bird entry does not exist: " + nameLatin
-                    )
-                );
+        return birdsRepo.getByName(NameUtils.normalize(nameLatin));
     }
 
     /** The same bird as {@link #getBirdByName(String)}, assembled into a card. */

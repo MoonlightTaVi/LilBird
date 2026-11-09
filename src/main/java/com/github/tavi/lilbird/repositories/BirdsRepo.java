@@ -9,18 +9,25 @@ import org.springframework.data.repository.query.Param;
 
 import com.github.tavi.lilbird.repositories.models.BirdEntity;
 import com.github.tavi.lilbird.util.enums.TaxonType;
+import com.github.tavi.lilbird.util.exceptions.NotFoundException;
 
 
 /** The base repository for birds (as unique entries) in the database. */
 public interface BirdsRepo extends JpaRepository<BirdEntity,Long> {
 
-    /** Finds the bird by its normalized primary latin name. */
+    /** @param nameNormal   Must be normalized for proper look-up. */
     @Query("SELECT b FROM Bird b WHERE b.nameNormal = :name_normal")
-    public Optional<BirdEntity> findByName(@Param("name_normal") String nameNormal);
+    Optional<BirdEntity> findByName(@Param("name_normal") String nameNormal);
+
+    /** Same as {@link #findByName}, but throws {@link NotFoundException}. */
+    default BirdEntity getByName(String nameNormal) throws NotFoundException {
+        return findByName(nameNormal)
+            .orElseThrow(() -> birdNotFound(nameNormal));
+    }
 
     /** 
-     * Returns the list of entries that correspond 
-     * to the given taxon type and species range.
+     * @return  The list of {@link BirdEntity} that correspond 
+     *          to the given taxon type and species range.
      */
     @Query(
         """
@@ -36,5 +43,10 @@ public interface BirdsRepo extends JpaRepository<BirdEntity,Long> {
         @Param("min_species") int minSpecies,
         @Param("max_species") int maxSpecies
     );
+
+
+    private NotFoundException birdNotFound(String nameNormal) {
+        return new NotFoundException("Could not find the entry for: " + nameNormal);
+    }
 
 }
