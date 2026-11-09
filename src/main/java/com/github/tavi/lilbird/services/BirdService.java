@@ -12,8 +12,10 @@ import org.springframework.validation.annotation.Validated;
 import com.github.tavi.lilbird.api.models.BirdCard;
 import com.github.tavi.lilbird.repositories.BirdNamesRepo;
 import com.github.tavi.lilbird.repositories.BirdsRepo;
+import com.github.tavi.lilbird.repositories.PrimaryNamesRepo;
 import com.github.tavi.lilbird.repositories.models.BirdEntity;
 import com.github.tavi.lilbird.repositories.models.NameEntity;
+import com.github.tavi.lilbird.repositories.models.PrimaryNameEntity;
 import com.github.tavi.lilbird.util.NameUtils;
 import com.github.tavi.lilbird.util.exceptions.NotFoundException;
 
@@ -32,6 +34,8 @@ public class BirdService {
     private BirdsRepo birdsRepo;
     @Autowired
     private BirdNamesRepo namesRepo;
+    @Autowired
+    private PrimaryNamesRepo primaryNamesRepo;
 
 
     /** 
@@ -40,18 +44,35 @@ public class BirdService {
      */
     @Transactional
     public BirdEntity saveCard(@NotNull BirdCard card) {
-        final Locale locale = Locale.forLanguageTag(card.getLangTag());
-        final BirdEntity birdEntity = getBirdOrCreate(card.getNameLatin());
+        Locale locale = card.getLocale();
+        BirdEntity birdEntity = getBirdOrCreate(card.getNameLatin());
+
+        String primaryName = card.getNamePrimary();
+        if (primaryName != null)
+            primaryNamesRepo.save(new PrimaryNameEntity(birdEntity, locale, primaryName));
         for (String nameStr : card.getAlternativeNames())
             namesRepo.save(new NameEntity(nameStr, locale, birdEntity));
+
         return birdEntity;
     }
 
     /** The same bird as {@link #getBird(String)}, but assembled into a card. */
     public BirdCard getCard(String nameLatin) throws NotFoundException {
-        BirdCard birdCard = new BirdCard(getBird(nameLatin));
-        for (NameEntity nameEntity : getNamesOf(nameLatin))
+        Locale locale = Locale.ENGLISH; // TODO Using EN locale for now
+        BirdEntity birdEntity = getBird(nameLatin);
+        BirdCard birdCard = new BirdCard(birdEntity);
+
+        PrimaryNameEntity primaryName = primaryNamesRepo
+            .getOpt(
+                birdEntity.getId(), 
+                locale
+            )
+            .orElse(null);
+        if (primaryName != null)
+            birdCard.setNamePrimary(primaryName.getNameValue());
+        for (NameEntity nameEntity : getNamesOf(nameLatin, locale))
             birdCard.addAltName(nameEntity);
+
         return birdCard;
     }
 
@@ -83,13 +104,13 @@ public class BirdService {
 
 
     /** Names stored for the bird with this latin name, in insertion order. */
-    public List<NameEntity> getNamesOf(@NotNull String latinName) {
-        return namesRepo.findNamesByPrimary(NameUtils.normalize(latinName));
+    public List<NameEntity> getNamesOf(@NotNull String latinName, @NotNull Locale locale) {
+        return namesRepo.findNamesByPrimary(NameUtils.normalize(latinName), locale);
     }
 
     /** Same as {@link #getNamesOf(String)} for a bird that is already loaded. */
-    public List<NameEntity> getNamesOf(@NotNull BirdEntity entry) {
-        return namesRepo.findNamesByReference(entry.getId());
+    public List<NameEntity> getNamesOf(@NotNull BirdEntity entry, @NotNull Locale locale) {
+        return namesRepo.findNamesByReference(entry.getId(), locale);
     }
 
 }

@@ -2,6 +2,7 @@ package com.github.tavi.lilbird.api.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tavi.lilbird.repositories.models.BirdEntity;
@@ -21,9 +22,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BirdCard {
     
-    /** The language tag associated with the locale; defaults to {@code ru}. */
-    @JsonProperty("lang_tag")
-    private String langTag = "ru";
+    /** The locale for the localized names; defaults to {@code en}. */
+    @JsonProperty("locale")
+    private Locale locale = Locale.ENGLISH;
 
     /** The bird's own latin name. */
     @NotBlank

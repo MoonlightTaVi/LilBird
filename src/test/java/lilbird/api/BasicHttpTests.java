@@ -34,6 +34,7 @@ public class BasicHttpTests {
     @BeforeAll
     public static void setup() {
         cardDto = new BirdCard("Bubo scandiacus");
+        cardDto.setNamePrimary("LowL");
         cardDto.setAlternativeNames(List.of(
             "Owl", "Polar Owl", "Полярная сова", "Nyctea scandiaca"
         ));

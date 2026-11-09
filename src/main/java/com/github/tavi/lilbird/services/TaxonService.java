@@ -124,7 +124,7 @@ public class TaxonService {
         }
 
         private void loadAlternativeNames() {
-            for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId())) {
+            for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId(), locale)) {
                 taxonCard.addAltName(nameEntity);
             }
         }
