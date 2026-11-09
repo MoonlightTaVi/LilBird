@@ -2,6 +2,8 @@ package com.github.tavi.lilbird.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,77 +37,63 @@ public class BirdCardsService {
     private BirdNamesRepo namesRepo;
 
 
-    /** Creates a new bird row or updates the existing one. */
-    public BirdEntity save(@NotNull BirdEntity bird) {
-        return birdsRepo.save(bird);
-    }
-
-    /** Creates or updates one name row, given its reference. */
-    public NameEntity save(@NotNull NameEntity name, @NotNull BirdEntity reference) {
-        name.setReference(reference);
-        return namesRepo.save(name);
-    }
-
-    /**
-     * Stores a new bird and the names from the card.
-     * The bird row receives only {@link BirdCard#getNameLatin()}.
+    /** 
+     * Decomposes the card into a {@link BirdEntity} 
+     * and its {@link NameEntity} instances, then saves them separately.
      */
     @Transactional
-    public BirdEntity save(@NotNull BirdCard card) {
-        BirdEntity bird = new BirdEntity(card.getNameLatin());
-        bird = birdsRepo.save(bird);
-
-        for (String nameValue : card.getAlternativeNames()) {
-            // TODO Using RU locale currently
-            save(new NameEntity(nameValue, "ru"), bird);
-        }
-
+    public BirdEntity saveCard(@NotNull BirdCard card) {
+        final Locale locale = Locale.forLanguageTag("ru"); // TODO Using RU locale currently
+        final BirdEntity bird = getBirdOrCreate(card.getNameLatin());
+        card.getAlternativeNames()
+            .stream()
+            .map(nameStr -> new NameEntity(nameStr, locale, bird))
+            .forEach(namesRepo::save);
         return bird;
     }
 
-    /**
-     * Updates or creates a new bird entity that will hold the information about
-     * a taxon of some type.
+    /** The same bird as {@link #getBird(String)}, but assembled into a card. */
+    public BirdCard getCard(String nameLatin) throws NotFoundException {
+        BirdEntity entity = getBird(nameLatin);
+        BirdCard card = new BirdCard(entity.getNameLatin());
+        card.setAlternativeNames(
+            getNamesOf(nameLatin)
+            .stream()
+            .map(n -> n.getNameDisplayed())
+            .toList()
+        );
+        return card;
+    }
+
+    /** 
+     * @param nameLatin             The primary latin name (normalized automatically). 
+     * @throws NotFoundException    If no bird with this name is present.
      */
-    @Transactional
-    public BirdEntity save(@NotNull TaxonCard taxon, @NotNull TaxonType type) {
-        BirdEntity e = new BirdEntity(taxon.getNameLatin());
-        e.setTaxonType(type);
-        e.setSpeciesCount(taxon.getSpeciesCount());
-        e = birdsRepo.save(e);
-
-        if (taxon.hasPrimaryName()) {
-            // TODO Using RU locale currently
-            save(new NameEntity(taxon.getNamePrimary(), "ru"), e);
-        }
-
-        return e;
-    }
-
-
-    /** Checks if a bird with this latin name exists. */
-    public boolean checkBirdExists(String nameLatin) {
-        return !birdsRepo
-                .findByName(NameUtils.normalize(nameLatin))
-                .isEmpty();
-    }
-
-    /** @param nameLatin    The primary latin name (normalized automatically). */
-    public BirdEntity getBirdByName(String nameLatin) throws NotFoundException {
+    public BirdEntity getBird(String nameLatin) throws NotFoundException {
         return birdsRepo.getByName(NameUtils.normalize(nameLatin));
     }
 
-    /** The same bird as {@link #getBirdByName(String)}, assembled into a card. */
-    public BirdCard getCardByName(String nameLatin) {
-        BirdEntity entity = getBirdByName(nameLatin);
-        BirdCard card = new BirdCard(entity.getNameLatin());
+    /** 
+     * @param nameLatin             The primary latin name (normalized automatically).
+     * @return  The {@link BirdEntity} with this name; 
+     *          creates a new entity if not present. 
+     */
+    public BirdEntity getBirdOrCreate(String nameLatin) {
+        return birdsRepo.save(new BirdEntity(nameLatin));
+    }
 
-        List<String> alternativeNames = new ArrayList<>();
-        for (NameEntity nameEnt : getNamesOf(nameLatin))
-            alternativeNames.add(nameEnt.getNameDisplayed());
-        card.setAlternativeNames(alternativeNames);
+    /** 
+     * @param nameLatin             The primary latin name (normalized automatically).
+     * @return {@link Optional} of the bird, if present; 
+     *          {@link Optional#empty()} otherwise. 
+     */
+    public Optional<BirdEntity> getBirdSilently(String nameLatin) {
+        return birdsRepo.findByName(NameUtils.normalize(nameLatin));
+    }
 
-        return card;
+    /** Returns every bird row. */
+    public List<BirdEntity> getAllBirds() {
+        return birdsRepo.findAll();
     }
 
 
@@ -119,6 +107,18 @@ public class BirdCardsService {
         return namesRepo.findNamesByReference(entry.getId());
     }
 
+
+    @Transactional
+    public BirdEntity save(@NotNull TaxonCard taxon, @NotNull TaxonType type) {
+        final Locale locale = Locale.forLanguageTag("ru"); // TODO Using RU locale currently
+        BirdEntity e = new BirdEntity(taxon.getNameLatin());
+        e.setTaxonType(type);
+        e.setSpeciesCount(taxon.getSpeciesCount());
+        e = birdsRepo.save(e);
+        if (taxon.hasPrimaryName())
+            namesRepo.save(new NameEntity(taxon.getNamePrimary(), locale, e));
+        return e;
+    }
 
     /** 
      * Returns the list of all bird entries that correspond 
@@ -145,9 +145,5 @@ public class BirdCardsService {
     }
 
 
-    /** Returns every bird row. */
-    public List<BirdEntity> getAllBirds() {
-        return birdsRepo.findAll();
-    }
 
 }

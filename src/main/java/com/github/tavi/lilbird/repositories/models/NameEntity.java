@@ -45,46 +45,26 @@ public class NameEntity {
     /** The locale of the name. Defaults to latin. */
     @Column(name = "locale", nullable = false)
     private Locale locale = Locale.forLanguageTag("la");
-
+    
     /** The name as it is displayed for user. */
     @Column(name = "name_displayed", nullable = false)
     private String nameDisplayed;
-
-    /** The normalized name, for seraching algorithms. Cannot be set directly. */
+    
+    /** The name as it is displayed for user. */
     @Setter(AccessLevel.NONE)
     @Column(name = "name_normal", nullable = false)
-    private String nameNormal;
+    private String nameNormal = null;   // Hibernate needs this to be field
 
 
-    /** Creates a new name entity from its displayed name value, given its locale. */
-    public NameEntity(String nameValue, String languageTag) {
-        nameDisplayed = nameValue;
-        setLocale(Locale.forLanguageTag(languageTag));
-    }
-
-
-    /** 
-     * Updates the displayed name. 
-     * If the locale is set, updates the normalized name. 
-     */
-    public void setNameDisplayed(String nameValue) {
-        nameDisplayed = nameValue;
-        if (locale != null)
-            nameNormal = NameUtils.normalize(nameDisplayed, locale);
-    }
-
-    /** 
-     * Updates the locale. 
-     * If the displayed name is set, updates the normalized name. 
-     */
-    public void setLocale(Locale locale) {
+    /** The recommended constructor for manual instantiation. */
+    public NameEntity(String nameDisplayed, Locale locale, BirdEntity reference) {
+        this.nameDisplayed = nameDisplayed;
         this.locale = locale;
-        if (nameDisplayed != null)
-            nameNormal = NameUtils.normalize(nameDisplayed, locale);
+        this.reference = reference;
+        nameNormal = NameUtils.normalize(nameDisplayed, locale);
     }
     
-
-    /** Returns whether this name locale corrspond to the given language tag. */
+    /** @return Whether this name's locale correspond to the given language tag. */
     public boolean isLocale(String languageTag) {
         return Locale.forLanguageTag(languageTag).equals(locale);
     }

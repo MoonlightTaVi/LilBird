@@ -35,7 +35,7 @@ public class BirdsAdminAPI {
     @PostMapping("/birds")
     @ResponseStatus(HttpStatus.CREATED)
     public void newBird(@RequestBody @Valid BirdCard card) {
-        service.save(card);
+        service.saveCard(card);
     }
 
 }

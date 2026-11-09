@@ -40,7 +40,7 @@ public class BirdsPublicAPI {
             @PathVariable("name_latin") String nameLatin
         )
     {
-        return ResponseEntity.ok(service.getCardByName(nameLatin));
+        return ResponseEntity.ok(service.getCard(nameLatin));
     }
 
 }
