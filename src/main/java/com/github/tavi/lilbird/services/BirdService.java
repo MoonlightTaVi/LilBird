@@ -88,11 +88,6 @@ public class BirdService {
         return birdsRepo.findByName(NameUtils.normalize(nameLatin));
     }
 
-    /** Returns every bird row. */
-    public List<BirdEntity> getAllBirds() {
-        return birdsRepo.findAll();
-    }
-
 
     /** Names stored for the bird with this latin name, in insertion order. */
     public List<NameEntity> getNamesOf(@NotNull String latinName) {

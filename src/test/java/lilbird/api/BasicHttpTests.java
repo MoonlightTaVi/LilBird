@@ -1,7 +1,6 @@
 package lilbird.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -62,19 +61,6 @@ public class BasicHttpTests {
             .body(dto)
             .exchange()
             .expectStatus().isCreated();
-    }
-
-    @Test
-    public void listBirds() {
-        rest.get()
-            .uri("/api/v1/birds")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(String.class)
-            .value(body -> {
-                assertTrue(body.contains("\"nameLatin\":\"Bubo scandiacus\""));
-                assertTrue(body.contains("\"nameNormal\":\"bubo scandiacus\""));
-            });
     }
 
     @Test
