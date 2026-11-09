@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.github.tavi.lilbird.api.exception.NotFoundException;
 import com.github.tavi.lilbird.enums.TaxonType;
+import com.github.tavi.lilbird.exceptions.NotFoundException;
 import com.github.tavi.lilbird.models.dto.BirdCard;
 import com.github.tavi.lilbird.models.dto.TaxonCard;
 import com.github.tavi.lilbird.models.entities.BirdEntity;
