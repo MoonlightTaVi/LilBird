@@ -40,26 +40,19 @@ public class BirdService {
      */
     @Transactional
     public BirdEntity saveCard(@NotNull BirdCard card) {
-        final Locale locale = Locale.forLanguageTag("ru"); // TODO Using RU locale currently
-        final BirdEntity bird = getBirdOrCreate(card.getNameLatin());
-        card.getAlternativeNames()
-            .stream()
-            .map(nameStr -> new NameEntity(nameStr, locale, bird))
-            .forEach(namesRepo::save);
-        return bird;
+        final Locale locale = Locale.forLanguageTag(card.getLangTag());
+        final BirdEntity birdEntity = getBirdOrCreate(card.getNameLatin());
+        for (String nameStr : card.getAlternativeNames())
+            namesRepo.save(new NameEntity(nameStr, locale, birdEntity));
+        return birdEntity;
     }
 
     /** The same bird as {@link #getBird(String)}, but assembled into a card. */
     public BirdCard getCard(String nameLatin) throws NotFoundException {
-        BirdEntity entity = getBird(nameLatin);
-        BirdCard card = new BirdCard(entity.getNameLatin());
-        card.setAlternativeNames(
-            getNamesOf(nameLatin)
-            .stream()
-            .map(n -> n.getNameDisplayed())
-            .toList()
-        );
-        return card;
+        BirdCard birdCard = new BirdCard(getBird(nameLatin));
+        for (NameEntity nameEntity : getNamesOf(nameLatin))
+            birdCard.addAltName(nameEntity);
+        return birdCard;
     }
 
     /** 

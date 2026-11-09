@@ -36,15 +36,18 @@ public class TaxonService {
      * then saves them separately.
      */
     @Transactional
-    public BirdEntity save(@NotNull TaxonCard taxon, @NotNull TaxonType type) {
-        final Locale locale = Locale.forLanguageTag("ru"); // TODO Using RU locale currently
-        BirdEntity e = new BirdEntity(taxon.getNameLatin());
-        e.setTaxonType(type);
-        e.setSpeciesCount(taxon.getSpeciesCount());
-        e = birdsRepo.save(e);
-        if (taxon.hasPrimaryName())
-            namesRepo.save(new NameEntity(taxon.getNamePrimary(), locale, e));
-        return e;
+    public BirdEntity save(@NotNull TaxonCard taxonCard, @NotNull TaxonType type) {
+        final Locale locale = Locale.forLanguageTag(taxonCard.getLangTag());
+        BirdEntity taxonEntity = new BirdEntity(taxonCard.getNameLatin());
+        taxonEntity.setTaxonType(type);
+        taxonEntity.setSpeciesCount(taxonCard.getSpeciesCount());
+        taxonEntity = birdsRepo.save(taxonEntity);
+        // TODO Currently saving the primary name to alternative ones
+        if (taxonCard.hasNamePrimary())
+            namesRepo.save(new NameEntity(taxonCard.getNamePrimary(), locale, taxonEntity));
+        for (String altName : taxonCard.getAlternativeNames())
+            namesRepo.save(new NameEntity(altName, locale, taxonEntity));
+        return taxonEntity;
     }
 
     /** 
@@ -57,18 +60,25 @@ public class TaxonService {
             int speciesRange
         ) 
     {
-        List<BirdEntity> entities = birdsRepo.filterByTaxon(
+        List<BirdEntity> taxonEntities = birdsRepo.filterByTaxon(
             type, 
             minSpecies, 
             minSpecies + speciesRange
         );
-        List<TaxonCard> result = new ArrayList<>();
-        for (BirdEntity e : entities) {
-            TaxonCard t = new TaxonCard(e);
-            // TODO Add alt names
-            result.add(t);
+        List<TaxonCard> taxonCards = new ArrayList<>();
+        for (BirdEntity taxonEntity : taxonEntities) {
+            TaxonCard taxonCard = new TaxonCard(taxonEntity);
+            for (NameEntity nameEntity : namesRepo.findNamesByReference(taxonEntity.getId())) {
+                // TODO Currently holding the primary name in alternative ones
+                if (!taxonCard.hasNamePrimary())
+                    taxonCard.setNamePrimary(nameEntity.getNameDisplayed());
+                else
+                    taxonCard.addAltName(nameEntity);
+            }
+                
+            taxonCards.add(taxonCard);
         }
-        return result;
+        return taxonCards;
     }
 
 }
