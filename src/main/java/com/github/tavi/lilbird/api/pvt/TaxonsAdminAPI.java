@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.models.TaxonCard;
-import com.github.tavi.lilbird.services.BirdCardsService;
+import com.github.tavi.lilbird.services.TaxonService;
 import com.github.tavi.lilbird.util.enums.TaxonType;
 
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 public class TaxonsAdminAPI {
 
     @Autowired
-    BirdCardsService service;
+    TaxonService service;
 
     /** Create a new taxon database entry. */
     @PostMapping("/{taxonType}")

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.models.BirdCard;
 import com.github.tavi.lilbird.repositories.models.BirdEntity;
-import com.github.tavi.lilbird.services.BirdCardsService;
+import com.github.tavi.lilbird.services.BirdService;
 
 
 /** The public API for database viewing. */
@@ -20,7 +20,7 @@ import com.github.tavi.lilbird.services.BirdCardsService;
 public class BirdsPublicAPI {
 
     @Autowired
-    private BirdCardsService service;
+    private BirdService service;
 
 
     /** The list of all {@link BirdEntity} objects. */

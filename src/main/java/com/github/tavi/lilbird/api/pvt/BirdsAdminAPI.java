@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.tavi.lilbird.api.models.BirdCard;
-import com.github.tavi.lilbird.services.BirdCardsService;
+import com.github.tavi.lilbird.services.BirdService;
 
 import jakarta.validation.Valid;
 
 
 /**
- * The RESTful controller for the {@link BirdCardsService}.
+ * The RESTful controller for the {@link BirdService}.
  * Allows administrators to create a bird and the names attached to it.
  */
 @Validated
@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 public class BirdsAdminAPI {
 
     @Autowired
-    private BirdCardsService service;
+    private BirdService service;
 
 
     /**
