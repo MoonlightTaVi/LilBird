@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.tavi.lilbird.annotations.IsLatinWord;
+import com.github.tavi.lilbird.util.annotations.IsLatinWord;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

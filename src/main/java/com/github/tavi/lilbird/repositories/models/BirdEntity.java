@@ -1,7 +1,7 @@
 package com.github.tavi.lilbird.repositories.models;
 
-import com.github.tavi.lilbird.enums.TaxonType;
 import com.github.tavi.lilbird.util.NameUtils;
+import com.github.tavi.lilbird.util.enums.TaxonType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

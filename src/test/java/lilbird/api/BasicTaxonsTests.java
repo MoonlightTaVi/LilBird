@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import com.github.tavi.lilbird.App;
 import com.github.tavi.lilbird.api.models.TaxonCard;
-import com.github.tavi.lilbird.enums.TaxonType;
+import com.github.tavi.lilbird.util.enums.TaxonType;
 
 
 /**

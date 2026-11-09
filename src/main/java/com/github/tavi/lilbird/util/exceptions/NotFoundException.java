@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.exceptions;
+package com.github.tavi.lilbird.util.exceptions;
 
 
 /**

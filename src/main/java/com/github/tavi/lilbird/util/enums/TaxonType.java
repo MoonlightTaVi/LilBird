@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.enums;
+package com.github.tavi.lilbird.util.enums;
 
 import org.springframework.core.convert.converter.Converter;
 

@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.exceptions;
+package com.github.tavi.lilbird.util.exceptions;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.github.tavi.lilbird.annotations;
+package com.github.tavi.lilbird.util.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
